@@ -11,7 +11,8 @@
 #include <thread>
 #include <unordered_map>
 
-#define EMOJI_INTERVAL_SEC (int)10
+// ten minutes
+#define EMOJI_INTERVAL_SEC (int) 600
 
 std::atomic<bool> stopTimerThread(false);
 
@@ -154,9 +155,9 @@ auto main(int argc, char **argv) -> int
                 std::string randomEmoji;
                 getRandomEmoji(randomEmoji);
                 
-                // not necessary to answer here
-                // dpp::message msg(event.command.channel_id, randomEmoji);
-                // event.reply(msg);
+                // reply required
+                dpp::message msg(event.command.channel_id, "OK");
+                event.reply(msg);
                 
                 std::this_thread::sleep_for(std::chrono::seconds(1));
 
