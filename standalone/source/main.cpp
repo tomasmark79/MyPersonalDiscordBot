@@ -1,88 +1,124 @@
-#include <greeter/greeter.h>
-#include <greeter/version.h>
-
-#include <dpp/dpp.h>
-#include <thread>
-#include <chrono>
-#include <atomic>
-
 #include "emoji/EmojiWrapper.hpp"
 
+#include <atomic>
+#include <chrono>
 #include <cxxopts.hpp>
+#include <dpp/dpp.h>
+#include <greeter/greeter.h>
+#include <greeter/version.h>
 #include <iostream>
 #include <string>
+#include <thread>
 #include <unordered_map>
+
+#define EMOJI_INTERVAL_SEC (int)10
 
 std::atomic<bool> stopTimerThread(false);
 
-auto main(int argc, char** argv) -> int
+Emoji /*💋*/ emojiWrapper;
+
+std::string &getRandomEmoji(std::string &randomEmoji)
 {
-  const std::unordered_map<std::string, greeter::LanguageCode> languages{
-      {"en", greeter::LanguageCode::EN},
-      {"de", greeter::LanguageCode::DE},
-      {"es", greeter::LanguageCode::ES},
-      {"fr", greeter::LanguageCode::FR},
-      {"cs", greeter::LanguageCode::CS},
-      
-  };
+    int a = rand() % 5;
 
-  cxxopts::Options options(*argv, "A program to welcome the world!");
+    switch (a)
+    {
+    case 0:
+        randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Smileys & Emotion");
+        break;
+    case 1:
+        randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Animals & Nature");
+        break;
+    case 2:
+        randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Food & Drink");
+        break;
+    case 3:
+        randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Activities");
+        break;
+    case 4:
+        randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Travel & Places");
+        break;
+    default:
+        randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Objects");
+        break;
+    }
 
-  std::string language; 
-  std::string name;
+    return randomEmoji;
+}
 
-  // clang-format off
+auto main(int argc, char **argv) -> int
+{
+    const std::unordered_map<std::string, greeter::LanguageCode> languages{
+        {"en", greeter::LanguageCode::EN}, {"de", greeter::LanguageCode::DE},
+        {"es", greeter::LanguageCode::ES}, {"fr", greeter::LanguageCode::FR},
+        {"cs", greeter::LanguageCode::CS},
+
+    };
+
+    cxxopts::Options options(*argv, "A program to welcome the world!");
+
+    std::string language;
+    std::string name;
+
+    // clang-format off
   options.add_options()
     ("h,help", "Show help")
     ("v,version", "Print the current version number")
     ("n,name", "Name to greet",cxxopts::value(name)->default_value("World"))
     ("l,lang", "Language code to use", cxxopts::value(language)->default_value("en"))
   ;
-  // clang-format on
+    // clang-format on
 
-  auto result = options.parse(argc, argv);
+    auto result = options.parse(argc, argv);
 
-  if (result["help"].as<bool>()) {
-    std::cout << options.help() << std::endl;
-    return 0;
-  }
+    if (result["help"].as<bool>())
+    {
+        std::cout << options.help() << std::endl;
+        return 0;
+    }
 
-  if (result["version"].as<bool>()) {
-    std::cout << "Greeter, version " << GREETER_VERSION << std::endl;
-    return 0;
-  }
+    if (result["version"].as<bool>())
+    {
+        std::cout << "Greeter, version " << GREETER_VERSION << std::endl;
+        return 0;
+    }
 
-  auto langIt = languages.find(language);
-  if (langIt == languages.end()) {
-    std::cerr << "unknown language code: " << language << std::endl;
-    return 1;
-  }
+    auto langIt = languages.find(language);
+    if (langIt == languages.end())
+    {
+        std::cerr << "unknown language code: " << language << std::endl;
+        return 1;
+    }
 
-  greeter::Greeter greeter(name);
-  std::cout << greeter.greet(langIt->second) << std::endl;
-  
-  Emoji /*💋*/ emojiWrapper;
-  
-  // token must be in external file due security reasons
-  std::ifstream tokenFile("token.txt");
-  std::string BOT_TOKEN;
-  if (tokenFile.is_open())
-  {
-      std::getline(tokenFile, BOT_TOKEN);
-      tokenFile.close();
-  }
-  else
-  {
-      std::cout << "Unable to open authentication token.txt file for reading!" << std::endl;
-      return 1;
-  }
-  
-     srand(time(NULL));
+    greeter::Greeter greeter(name);
+    std::cout << greeter.greet(langIt->second) << std::endl;
+
+    srand(time(NULL));
+
+    // token must be in external file due security reasons
+    std::ifstream tokenFile("token.txt");
+    std::string BOT_TOKEN;
+    if (tokenFile.is_open())
+    {
+        std::getline(tokenFile, BOT_TOKEN);
+        tokenFile.close();
+    }
+    else
+    {
+        std::cout << "Unable to open authentication token.txt file for reading!" << std::endl;
+        return 1;
+    }
+
     dpp::cluster bot(BOT_TOKEN);
+
     bot.on_log(dpp::utility::cout_logger());
 
+    // https://dpp.dev/10.0.35/
+
+    // bot.message_create([&](auto event) { std::cout << "Message created!" << std::endl; });
+
     bot.on_slashcommand(
-        [&](auto event)
+        [&bot](auto event)
         {
             using EventType = decltype(event);
 
@@ -100,43 +136,42 @@ auto main(int argc, char** argv) -> int
 
             if (event.command.get_command_name() == "emoji")
             {
-                std::cout << "tik-tak" << std::endl;
-                int a = rand() % 5;
+                std::cout << "emoji" << std::endl;
                 std::string randomEmoji;
-
-                switch (a)
-                {
-                case 0:
-                    randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Smileys & Emotion");
-                    break;
-                case 1:
-                    randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Animals & Nature");
-                    break;
-                case 2:
-                    randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Food & Drink");
-                    break;
-                case 3:
-                    randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Activities");
-                    break;
-                case 4:
-                    randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Travel & Places");
-                    break;
-                default:
-                    randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Objects");
-                    break;
-                }
-
-                std::cout << randomEmoji << std::endl;
-
+                getRandomEmoji(randomEmoji);
                 dpp::message msg(event.command.channel_id, randomEmoji);
                 event.reply(msg);
                 std::this_thread::sleep_for(std::chrono::seconds(1));
             }
 
-            if (event.command.get_command_name() == "emojistop")
+            if (event.command.get_command_name() == "stopemojitimer")
             {
                 stopTimerThread.store(true);
-                event.reply("Random Emoji Stopped!");
+                event.reply("Random Emoji Timer Stopped!");
+            }
+
+            if (event.command.get_command_name() == "startemojitimer")
+            {
+                std::cout << "startemojitimer" << std::endl;
+                std::string randomEmoji;
+                getRandomEmoji(randomEmoji);
+                dpp::message msg(event.command.channel_id, randomEmoji);
+                event.reply(msg);
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+
+                stopTimerThread.store(false);
+                std::thread threadTimer(
+                    [&bot]() -> void
+                    {
+                        while (!stopTimerThread.load())
+                        {
+                            std::cout << ". Tick ." << std::endl;
+                            std::this_thread::sleep_for(std::chrono::seconds(EMOJI_INTERVAL_SEC));
+                        }
+                    });
+
+                threadTimer.detach();
+
             }
         });
 
@@ -160,14 +195,19 @@ auto main(int argc, char** argv) -> int
 
                 bot.global_command_create(dpp::slashcommand("ping", "Ping pong!", bot.me.id));
                 bot.global_command_create(dpp::slashcommand("hit", "Hit Pot!", bot.me.id));
+
                 bot.global_command_create(
-                    dpp::slashcommand("emoji", "Random Emoji Start!", bot.me.id));
+                    dpp::slashcommand("emoji", "Show Random Emoji!", bot.me.id));
+
                 bot.global_command_create(
-                    dpp::slashcommand("emojistop", "Random Emoji Stop!", bot.me.id));
+                    dpp::slashcommand("startemojitimer", "Start Random Emoji Timer!", bot.me.id));
+
+                bot.global_command_create(
+                    dpp::slashcommand("stopemojitimer", "Stop Random Emoji Timer!", bot.me.id));
             }
         });
 
     bot.start(dpp::st_wait);
 
-  return 0;
+    return 0;
 }
