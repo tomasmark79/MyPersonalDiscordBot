@@ -13,6 +13,7 @@
 
 // ten minutes
 #define EMOJI_INTERVAL_SEC (int) 600
+#define OAUTH_TOKEN_FILE "/home/tomas/.discord_oauth.key"
 
 std::atomic<bool> stopTimerThread(false);
 
@@ -97,7 +98,10 @@ auto main(int argc, char **argv) -> int
     srand(time(NULL));
 
     // token must be in external file due security reasons
-    std::ifstream tokenFile("token.txt");
+    // explicit path is better than relative path due cmake builds locations
+    // and bash don't see correct path if it's not explicit
+    // todo find more clever way to do this
+    std::ifstream tokenFile(OAUTH_TOKEN_FILE);
     std::string BOT_TOKEN;
     if (tokenFile.is_open())
     {
@@ -106,7 +110,8 @@ auto main(int argc, char **argv) -> int
     }
     else
     {
-        std::cout << "Unable to open authentication token.txt file for reading!" << std::endl;
+        std::cout << "Unable to open authentication file for reading!" << std::endl;
+        std::cout << OAUTH_TOKEN_FILE << std::endl;
         return 1;
     }
 
