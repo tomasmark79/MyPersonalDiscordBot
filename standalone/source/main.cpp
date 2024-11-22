@@ -115,8 +115,6 @@ auto main(int argc, char **argv) -> int
 
     // https://dpp.dev/10.0.35/
 
-    // bot.message_create([&](auto event) { std::cout << "Message created!" << std::endl; });
-
     bot.on_slashcommand(
         [&bot](auto event)
         {
@@ -155,23 +153,32 @@ auto main(int argc, char **argv) -> int
                 std::cout << "startemojitimer" << std::endl;
                 std::string randomEmoji;
                 getRandomEmoji(randomEmoji);
-                dpp::message msg(event.command.channel_id, randomEmoji);
-                event.reply(msg);
+                
+                // not necessary to answer here
+                // dpp::message msg(event.command.channel_id, randomEmoji);
+                // event.reply(msg);
+                
                 std::this_thread::sleep_for(std::chrono::seconds(1));
 
                 stopTimerThread.store(false);
                 std::thread threadTimer(
-                    [&bot]() -> void
+                    [&bot, &event]() -> void
                     {
                         while (!stopTimerThread.load())
                         {
                             std::cout << ". Tick ." << std::endl;
+                            
+                            std::string randomEmoji;
+                            getRandomEmoji(randomEmoji);
+                            dpp::message msg(event.command.channel_id, randomEmoji);
+                            bot.message_create(msg);
+
+                            std::cout << randomEmoji << std::endl;
                             std::this_thread::sleep_for(std::chrono::seconds(EMOJI_INTERVAL_SEC));
                         }
                     });
 
                 threadTimer.detach();
-
             }
         });
 
