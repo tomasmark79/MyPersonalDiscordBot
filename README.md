@@ -17,7 +17,9 @@ Note: Store your bot's token (obtained via Discord's App Management) in a token.
 # Commands
 The example implementation includes a few basic commands, such as:
 
-/emoji - Displays a random emoji character.
+/emoji - Show Random Emoji!
+/startemojitimer - Start Random Emoji Timer!
+/stopemojitimer - Stop Random Emoji Timer!
 
 # To-Do
 
