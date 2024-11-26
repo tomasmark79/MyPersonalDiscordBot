@@ -19,35 +19,6 @@ std::atomic<bool> stopTimerThread(false);
 
 Emoji /*💋*/ emojiWrapper;
 
-std::string &getRandomEmoji(std::string &randomEmoji)
-{
-    int a = rand() % 5;
-
-    switch (a)
-    {
-    case 0:
-        randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Smileys & Emotion");
-        break;
-    case 1:
-        randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Animals & Nature");
-        break;
-    case 2:
-        randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Food & Drink");
-        break;
-    case 3:
-        randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Activities");
-        break;
-    case 4:
-        randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Travel & Places");
-        break;
-    default:
-        randomEmoji = emojiWrapper.getRandomEmojiFromGroup("Objects");
-        break;
-    }
-
-    return randomEmoji;
-}
-
 auto main(int argc, char **argv) -> int
 {
     const std::unordered_map<std::string, greeter::LanguageCode> languages{
@@ -158,7 +129,8 @@ auto main(int argc, char **argv) -> int
             {
                 std::cout << "startemojitimer" << std::endl;
                 std::string randomEmoji;
-                getRandomEmoji(randomEmoji);
+                emojiWrapper.getRandomEmoji(randomEmoji);
+                // getRandomEmoji(randomEmoji);
                 
                 // reply required
                 dpp::message msg(event.command.channel_id, "OK");
@@ -175,7 +147,9 @@ auto main(int argc, char **argv) -> int
                             std::cout << ". Tick ." << std::endl;
                             
                             std::string randomEmoji;
-                            getRandomEmoji(randomEmoji);
+                            // getRandomEmoji(randomEmoji);
+                            emojiWrapper.getRandomEmoji(randomEmoji);
+
                             dpp::message msg(event.command.channel_id, randomEmoji);
                             bot.message_create(msg);
 
