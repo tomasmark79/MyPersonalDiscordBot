@@ -113,7 +113,7 @@ auto main(int argc, char **argv) -> int
             {
                 std::cout << "emoji" << std::endl;
                 std::string randomEmoji;
-                getRandomEmoji(randomEmoji);
+                emojiWrapper.getRandomEmoji(randomEmoji);
                 dpp::message msg(event.command.channel_id, randomEmoji);
                 event.reply(msg);
                 std::this_thread::sleep_for(std::chrono::seconds(1));
@@ -130,7 +130,7 @@ auto main(int argc, char **argv) -> int
                 std::cout << "startemojitimer" << std::endl;
                 std::string randomEmoji;
                 emojiWrapper.getRandomEmoji(randomEmoji);
-                // getRandomEmoji(randomEmoji);
+              
                 
                 // reply required
                 dpp::message msg(event.command.channel_id, "OK");
@@ -147,7 +147,6 @@ auto main(int argc, char **argv) -> int
                             std::cout << ". Tick ." << std::endl;
                             
                             std::string randomEmoji;
-                            // getRandomEmoji(randomEmoji);
                             emojiWrapper.getRandomEmoji(randomEmoji);
 
                             dpp::message msg(event.command.channel_id, randomEmoji);
