@@ -46,10 +46,6 @@ BotBroker::BotBroker()
             {
                 event.reply("Pong!");
             }
-            if (event.command.get_command_name() == "hit")
-            {
-                event.reply("Pot!");
-            }
 
             if (event.command.get_command_name() == "emoji")
             {
@@ -122,7 +118,7 @@ BotBroker::BotBroker()
                 bot.global_command_create(command);
 
                 bot.global_command_create(dpp::slashcommand("ping", "Ping pong!", bot.me.id));
-                bot.global_command_create(dpp::slashcommand("hit", "Hit Pot!", bot.me.id));
+
 
                 bot.global_command_create(
                     dpp::slashcommand("emoji", "Show Random Emoji!", bot.me.id));

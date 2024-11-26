@@ -3,6 +3,6 @@
 
 auto main(int argc, char **argv) -> int
 {
-    BotBroker  botBroker;
+    BotBroker botBroker;
     return 0;
 }
