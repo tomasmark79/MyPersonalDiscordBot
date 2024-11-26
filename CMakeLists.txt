@@ -4,7 +4,7 @@ cmake_minimum_required(VERSION 3.14...3.22)
 
 # Note: update this to your new project's name and version
 project(
-  Greeter
+  MyDiscordBot
   VERSION 1.0
   LANGUAGES CXX
 )
@@ -33,6 +33,22 @@ CPMAddPackage(
   OPTIONS "FMT_INSTALL YES" # create an installable target
 )
 
+# DPP brainboxdotcc
+CPMAddPackage(
+    NAME DPP
+    GITHUB_REPOSITORY brainboxdotcc/DPP
+    VERSION 10.0.35
+    OPTIONS "DPP_BUILD_EXAMPLES OFF" "DPP_BUILD_TESTS OFF" "DPP_ENABLE_INSTALL ON"
+)
+
+# git@github.com:tomasmark79/EmojiTools.git
+CPMAddPackage(
+  NAME EmojiTools
+  GIT_TAG main
+  GITHUB_REPOSITORY tomasmark79/EmojiTools
+  OPTIONS "EMOJI_INSTALL YES" # create an installable target
+)
+
 # ---- Add source files ----
 
 # Note: globbing sources is considered bad practice as CMake's generators may not detect new files
@@ -51,7 +67,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
 
 # Link dependencies
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt)
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt dpp EmojiTools::EmojiTools)
 
 target_include_directories(
   ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
@@ -76,3 +92,4 @@ packageProject(
   COMPATIBILITY SameMajorVersion
   DEPENDENCIES "fmt 9.1.0"
 )
+
