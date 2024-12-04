@@ -33,6 +33,22 @@ CPMAddPackage(
   OPTIONS "FMT_INSTALL YES" # create an installable target
 )
 
+#OpenSSL
+CPMAddPackage(
+    NAME openssl-cmake
+    URL https://github.com/jimmy-park/openssl-cmake/archive/main.tar.gz
+    OPTIONS
+    "OPENSSL_CONFIGURE_OPTIONS no-shared\\\\;no-tests"
+    )
+
+# LibOpus
+CPMAddPackage(
+    NAME opus
+    GITHUB_REPOSITORY xiph/opus
+    VERSION 1.3.1
+    OPTIONS "OPUS_INSTALL OFF" "OPUS_BUILD_TESTS OFF" "OPUS_BUILD_SHARED OFF"
+)
+
 # DPP brainboxdotcc
 CPMAddPackage(
     NAME DPP
@@ -67,7 +83,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
 
 # Link dependencies
-target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt dpp EmojiTools::EmojiTools curl) 
+target_link_libraries(${PROJECT_NAME} PRIVATE fmt::fmt dpp EmojiTools::EmojiTools opus curl OpenSSL::SSL OpenSSL::Crypto) 
 
 target_include_directories(
   ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
