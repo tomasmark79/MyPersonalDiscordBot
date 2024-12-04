@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.14...3.22)
 project(
     MyDiscordBot
     VERSION 1.0
-    LANGUAGES CXX
+    LANGUAGES C CXX ASM
 )
 
 # ---- Include guards ----
@@ -26,16 +26,35 @@ include(cmake/CPM.cmake)
 # PackageProject.cmake will be used to make our target installable
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.8.0")
 
-# OpenSSL
-# find_package(OpenSSL REQUIRED)
+# Libcurl
 
-# not work under aarch64 - build failed due unsuported ARM architecture
-# # http://raspbian.raspberrypi.org/raspbian/pool/main/o/openssl/
+# CPMAddPackage(
+#     NAME curl
+#     GITHUB_REPOSITORY "curl/curl"
+#     GIT_TAG "curl-8_11_0"
+#     OPTIONS
+#         "CMAKE_USE_LIBSSH2 OFF"
+#         "CURL_USE_MBEDTLS ON"
+#         "BUILD_CURL_EXE OFF"
+#         "BUILD_SHARED_LIBS OFF"
+#         "BUILD_TESTING OFF"
+# )
+
+CPMAddPackage(
+    NAME libcurl
+    GITHUB_REPOSITORY curl/curl
+    GIT_TAG "curl-8_11_0"
+    OPTIONS "BUILD_CURL_EXE OFF" "BUILD_TESTING OFF" "CURL_DISABLE_FTP ON" "CURL_DISABLE_LDAP ON"
+)       
+
+# OpenSSL
+# configure for aarch64
 CPMAddPackage(
     NAME openssl-cmake
     URL https://github.com/jimmy-park/openssl-cmake/archive/main.tar.gz
     VERSION 3.4.0
     OPTIONS "OPENSSL_CONFIGURE_OPTIONS no-shared\\\\;no-tests"
+    # PLATFORM_TARGET aarch64
 )
 
 # LibOpus
@@ -89,9 +108,9 @@ target_link_libraries(
     PRIVATE dpp
             EmojiTools::EmojiTools
             opus
-            curl
             OpenSSL::SSL
             OpenSSL::Crypto
+            libcurl
 )
 
 target_include_directories(
@@ -115,5 +134,5 @@ packageProject(
     INCLUDE_DESTINATION include/${PROJECT_NAME}-${PROJECT_VERSION}
     VERSION_HEADER "${VERSION_HEADER_LOCATION}"
     COMPATIBILITY SameMajorVersion
-    DEPENDENCIES "fmt 9.1.0"
+    #DEPENDENCIES "fmt 9.1.0"
 )
