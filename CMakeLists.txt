@@ -1,12 +1,15 @@
 cmake_minimum_required(VERSION 3.14...3.22)
 
+# compile for rpi4 $ rm -rf build-aarch64/ $ cmake -B build-aarch64/
+# -DCMAKE_TOOLCHAIN_FILE=rpi4-toolchain.cmake $ cmake --build build-aarch64/ -- -j16
+
 # ---- Project ----
 
 # Note: update this to your new project's name and version
 project(
     MyDiscordBot
     VERSION 1.0
-    LANGUAGES C CXX ASM
+    LANGUAGES C CXX
 )
 
 # ---- Include guards ----
@@ -26,52 +29,12 @@ include(cmake/CPM.cmake)
 # PackageProject.cmake will be used to make our target installable
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.8.0")
 
-# Libcurl
-
-# CPMAddPackage(
-#     NAME curl
-#     GITHUB_REPOSITORY "curl/curl"
-#     GIT_TAG "curl-8_11_0"
-#     OPTIONS
-#         "CMAKE_USE_LIBSSH2 OFF"
-#         "CURL_USE_MBEDTLS ON"
-#         "BUILD_CURL_EXE OFF"
-#         "BUILD_SHARED_LIBS OFF"
-#         "BUILD_TESTING OFF"
-# )
-
-CPMAddPackage(
-    NAME libcurl
-    GITHUB_REPOSITORY curl/curl
-    GIT_TAG "curl-8_11_0"
-    OPTIONS "BUILD_CURL_EXE OFF" "BUILD_TESTING OFF" "CURL_DISABLE_FTP ON" "CURL_DISABLE_LDAP ON"
-)       
-
-# OpenSSL
-# configure for aarch64
-CPMAddPackage(
-    NAME openssl-cmake
-    URL https://github.com/jimmy-park/openssl-cmake/archive/main.tar.gz
-    VERSION 3.4.0
-    OPTIONS "OPENSSL_CONFIGURE_OPTIONS no-shared\\\\;no-tests"
-    # PLATFORM_TARGET aarch64
-)
-
-# LibOpus
-CPMAddPackage(
-    NAME opus
-    GITHUB_REPOSITORY xiph/opus
-    VERSION 1.5.2
-    OPTIONS "OPUS_INSTALL YES" "OPUS_BUILD_TESTS OFF" "OPUS_BUILD_SHARED YES"
-)
-
 # DPP brainboxdotcc
 CPMAddPackage(
     NAME DPP
     GITHUB_REPOSITORY brainboxdotcc/DPP
     VERSION 10.0.35
     OPTIONS "DPP_BUILD_EXAMPLES OFF" "DPP_BUILD_TESTS OFF" "DPP_ENABLE_INSTALL ON"
-    
 )
 
 # git@github.com:tomasmark79/EmojiTools.git
@@ -104,13 +67,10 @@ target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>
 
 # Link dependencies
 target_link_libraries(
-    ${PROJECT_NAME}
-    PRIVATE dpp
-            EmojiTools::EmojiTools
-            opus
-            OpenSSL::SSL
-            OpenSSL::Crypto
-            libcurl
+    ${PROJECT_NAME} PRIVATE 
+        dpp
+        EmojiTools::EmojiTools 
+        curl
 )
 
 target_include_directories(
@@ -134,5 +94,4 @@ packageProject(
     INCLUDE_DESTINATION include/${PROJECT_NAME}-${PROJECT_VERSION}
     VERSION_HEADER "${VERSION_HEADER_LOCATION}"
     COMPATIBILITY SameMajorVersion
-    #DEPENDENCIES "fmt 9.1.0"
 )
