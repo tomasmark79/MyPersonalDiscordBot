@@ -91,6 +91,9 @@ BotBroker::BotBroker()
                         std::cout << "Downloaded content:\n" << readBuffer << std::endl;
                     }
                     curl_easy_cleanup(curl);
+
+                    dpp::message msg(event.command.channel_id, readBuffer);
+                    bot.message_create(msg);
                 }
 
                 event.reply("Ziskat devizove kurzy!");
