@@ -1,8 +1,5 @@
 cmake_minimum_required(VERSION 3.14...3.22)
 
-# compile for rpi4 $ rm -rf build-aarch64/ $ cmake -B build-aarch64/
-# -DCMAKE_TOOLCHAIN_FILE=rpi4-toolchain.cmake $ cmake --build build-aarch64/ -- -j16
-
 # ---- Project ----
 
 # Note: update this to your new project's name and version
@@ -33,7 +30,7 @@ CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.8.0")
 CPMAddPackage(
     NAME DPP
     GITHUB_REPOSITORY brainboxdotcc/DPP
-    VERSION 10.0.35
+    VERSION 10.0.35 GIT_PROGRESS TRUE
     OPTIONS "DPP_BUILD_EXAMPLES OFF" "DPP_BUILD_TESTS OFF" "DPP_ENABLE_INSTALL ON"
 )
 
@@ -42,8 +39,10 @@ CPMAddPackage(
     NAME EmojiTools
     GIT_TAG main
     GITHUB_REPOSITORY tomasmark79/EmojiTools
-    OPTIONS "EMOJI_INSTALL YES" # create an installable target
+    OPTIONS "EMOJI_INSTALL YES"
 )
+
+include(cmake/CPM.cmake)
 
 # ---- Add source files ----
 
@@ -66,13 +65,7 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
 
 # Link dependencies
-target_link_libraries(
-    ${PROJECT_NAME} PRIVATE 
-        dpp
-        EmojiTools::EmojiTools 
-        curl
-)
-
+target_link_libraries(${PROJECT_NAME} PRIVATE dpp EmojiTools::EmojiTools curl)
 target_include_directories(
     ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
