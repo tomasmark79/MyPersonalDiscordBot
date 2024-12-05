@@ -6,7 +6,7 @@ cmake_minimum_required(VERSION 3.14...3.22)
 project(
     MyDiscordBot
     VERSION 1.0
-    LANGUAGES C CXX
+    LANGUAGES C CXX ASM
 )
 
 # ---- Include guards ----
@@ -21,10 +21,20 @@ endif()
 # ---- Add dependencies via CPM ----
 # see https://github.com/TheLartians/CPM.cmake for more info
 
+include(FetchContent)
 include(cmake/CPM.cmake)
 
 # PackageProject.cmake will be used to make our target installable
-CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.8.0")
+CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.12.0")
+
+CPMAddPackage(
+    NAME openssl-cmake
+    # URL https://github.com/jimmy-park/openssl-cmake/archive/main.tar.gz
+    # URL https://github.com/janbar/openssl-cmake/archive/refs/tags/1.1.1t-20230216.zip
+    # URL https://github.com/jimmy-park/openssl-cmake/archive/refs/tags/3.4.0.zip
+    URL https://github.com/janbar/openssl-cmake/archive/refs/tags/1.1.1w-20231130.tar.gz #cross aarch64 ok
+    OPTIONS "OPENSSL_CONFIGURE_OPTIONS no-shared;no-tests"
+)
 
 # DPP brainboxdotcc
 CPMAddPackage(
@@ -65,7 +75,9 @@ set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 17)
 target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>:/permissive->")
 
 # Link dependencies
-target_link_libraries(${PROJECT_NAME} PRIVATE dpp EmojiTools::EmojiTools curl)
+target_link_libraries(
+    ${PROJECT_NAME} PRIVATE dpp EmojiTools::EmojiTools)
+
 target_include_directories(
     ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
                            $<INSTALL_INTERFACE:include/${PROJECT_NAME}-${PROJECT_VERSION}>
