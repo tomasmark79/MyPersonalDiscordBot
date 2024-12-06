@@ -15,6 +15,14 @@ zlib is neccessary to install to aarch64-sysroot
 rm -rf build-aarch64/
 cmake -B build-aarch64/ -DCMAKE_TOOLCHAIN_FILE=aarch64.cmake
 
-# two time due OpenSSL compilation is side running 
+# openssl compilation is side running so from this reason we need to run make twice
 cmake --build build-aarch64/ -- -j$(nproc)
 ```
+
+links to sort
+https://github.com/crosstool-ng/crosstool-ng/tree/crosstool-ng-1.25.0
+https://cmake.org/cmake/help/book/mastering-cmake/chapter/Cross%20Compiling%20With%20CMake.html#finding-external-libraries-programs-and-other-files
+https://github.com/jimmy-park/openssl-cmake
+https://github.com/janbar/openssl-cmake
+
+
