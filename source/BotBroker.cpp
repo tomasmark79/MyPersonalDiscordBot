@@ -4,17 +4,18 @@
 
 #include <atomic>
 #include <chrono>
+#include <libssh2.h>
+#include <mydiscordbot/version.h>
 
-//#include <libpsl.h>
-
-//#define USE_CURL
+// #define USE_CURL
 
 #ifdef USE_CURL
-#include "curl/curl.h"
+#    include "curl/curl.h"
 #endif
 #include <dpp/dpp.h>
 #include <fstream>
 #include <iostream>
+#include <string_view>
 #include <thread>
 #include <unordered_map>
 
@@ -108,6 +109,99 @@ BotBroker::BotBroker()
                 event.reply("Ziskat devizove kurzy!");
             }
 
+            if (event.command.get_command_name() == "getbotinfo")
+            {
+                event.reply("Bot Info");
+
+                // get current time
+                std::time_t now
+                    = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+                std::string timeStr = std::ctime(&now);
+
+                // // get current processor CPU name
+                // char cpuName[1024];
+                // FILE *cpuinfo
+                //     = popen("lscpu | grep 'Model name' | awk '{$1=$2=\"\"; print $0}'", "r");
+                // fgets(cpuName, 1024, cpuinfo);
+                // pclose(cpuinfo);
+                // std::string cpuNameStr = "CPU: ";
+                // cpuNameStr += cpuName;
+
+                // get 7 rows from lscpu bash command
+                std::string lscpuRows[7];
+                FILE *lscpu = popen("lscpu", "r");
+                for (int i = 0; i < 7; i++)
+                {
+                    char row[1024];
+                    fgets(row, 1024, lscpu);
+                    lscpuRows[i] = row;
+                }
+                pclose(lscpu);
+                std::string strCpuInfo = "CPU:\n" + lscpuRows[0] + lscpuRows[1] + lscpuRows[2]
+                                         + lscpuRows[3] + lscpuRows[4] + lscpuRows[5]
+                                         + lscpuRows[6];
+
+                // get hostname of running process
+                char hostname[1024];
+                gethostname(hostname, 1024);
+                std::string hostName = "Hostname: ";
+                hostName += hostname;
+
+                // get running processor architecture
+                std::string processorArch = "Processor Architecture: ";
+                processorArch += std::to_string(sizeof(void *) * 8);
+                processorArch += " bit";
+
+                // get running OS
+                std::string runningOS = "Running OS: ";
+#ifdef _WIN32
+                runningOS += "Windows";
+#elif __linux__
+                runningOS += "Linux";
+#elif __APPLE__
+                runningOS += "MacOS";
+#endif
+
+                // get running compiler
+                std::string runningCompiler = "Running Compiler: ";
+#ifdef __clang__
+                runningCompiler += "Clang";
+#elif __GNUC__
+                runningCompiler += "GCC";
+#endif
+
+                // get running compiler version
+                std::string runningCompilerVersion = "Running Compiler Version: ";
+#ifdef __clang__
+                runningCompilerVersion += __clang_version__;
+#elif __GNUC__
+
+                runningCompilerVersion += std::to_string(__GNUC__) + "."
+                                          + std::to_string(__GNUC_MINOR__) + "."
+                                          + std::to_string(__GNUC_PATCHLEVEL__);
+#endif
+
+                // get running C++ standard
+                std::string runningCppStandard = "Running C++ Standard: ";
+#ifdef __cplusplus
+                runningCppStandard += std::to_string(__cplusplus);
+#endif
+
+                // get running bot version
+                std::string runningBotVersion = "Running Bot Version: ";
+                runningBotVersion += MYDISCORDBOT_VERSION;
+                runningBotVersion += " | LibSSH2 Version: ";
+                runningBotVersion += LIBSSH2_VERSION;
+
+                std::string botInfoBuf = timeStr + "\n" + hostName + "\n" + strCpuInfo + "\n"
+                                         + processorArch + "\n" + runningOS + "\n" + runningCompiler
+                                         + "\n" + runningCompilerVersion + "\n" + runningCppStandard
+                                         + "\n" + runningBotVersion;
+
+                dpp::message msg(event.command.channel_id, botInfoBuf);
+                bot.message_create(msg);
+            }
+
             if (event.command.get_command_name() == "stopemojitimer")
             {
                 stopTimerThread.store(true);
@@ -180,6 +274,11 @@ BotBroker::BotBroker()
 
                 bot.global_command_create(
                     dpp::slashcommand("devizovekurzy", "Ziskat devizove kurzy!", bot.me.id));
+
+                bot.global_command_create(
+                    dpp::slashcommand("getbotinfo", "Ziskat informace o botovi!", bot.me.id));
+
+                std::cout << "Commands registered!" << std::endl;
             }
         });
 

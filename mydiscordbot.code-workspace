@@ -96,6 +96,7 @@
 			"valarray": "cpp",
 			"variant": "cpp",
 			"text_encoding": "cpp"
-		}
+		},
+		"cmake.ctest.allowParallelJobs": false
 	}
 }

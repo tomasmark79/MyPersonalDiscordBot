@@ -3,10 +3,9 @@ set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR aarch64)
 
 # Define sysroot
-# set(CMAKE_SYSROOT /home/tomas/rpi-rootfs/)
 set(CMAKE_SYSROOT /home/tomas/x-tools/aarch64-rpi4-linux-gnu/aarch64-rpi4-linux-gnu/sysroot)
 
-# Specify cross-compilers v14
+# Specify cross-compilers
 set(CMAKE_C_COMPILER /home/tomas/x-tools/aarch64-rpi4-linux-gnu/bin/aarch64-rpi4-linux-gnu-gcc)
 set(CMAKE_CXX_COMPILER /home/tomas/x-tools/aarch64-rpi4-linux-gnu/bin/aarch64-rpi4-linux-gnu-g++)
 set(CMAKE_ASM_COMPILER /home/tomas/x-tools/aarch64-rpi4-linux-gnu/bin/aarch64-rpi4-linux-gnu-as)

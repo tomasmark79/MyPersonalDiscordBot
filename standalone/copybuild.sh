@@ -6,11 +6,15 @@ STANDALONE_SRC="/home/tomas/dev/cpp/projects/mydiscordbot/standalone/build-aarch
 DEST="tomas@devbox-air:/home/tomas/apps"
 SSH_OPTS=(-e "ssh -p 7922")
 
+rsync -avz "${SSH_OPTS[@]}" $SRC_BASE/_deps/fmt-build/libfmt.* $DEST
 rsync -avz "${SSH_OPTS[@]}" $STANDALONE_SRC/MyDiscordBotStandalone $DEST
 rsync -avz "${SSH_OPTS[@]}" $SRC_BASE/_deps/dpp-build/library/libdpp.* $DEST
 rsync -avz "${SSH_OPTS[@]}" $SRC_BASE/_deps/emojitools-build/libEmojiTools.so $DEST
-rsync -avz "${SSH_OPTS[@]}" $SRC_BASE/_deps/fmt-build/libfmt.* $DEST
 rsync -avz "${SSH_OPTS[@]}" $SRC_BASE/libMyDiscordBot.so $DEST
+
+
+# not neccessary
+
 
 # slow scp example
 #scp -P 7922 /home/tomas/dev/cpp/projects/mydiscordbot/standalone/build-aarch64/MyDiscordBotStandalone tomas@devbox-air:/home/tomas/apps
