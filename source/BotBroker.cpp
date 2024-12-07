@@ -4,7 +4,14 @@
 
 #include <atomic>
 #include <chrono>
-//#include <curl/curl.h>
+
+//#include <libpsl.h>
+
+//#define USE_CURL
+
+#ifdef USE_CURL
+#include "curl/curl.h"
+#endif
 #include <dpp/dpp.h>
 #include <fstream>
 #include <iostream>
@@ -67,34 +74,36 @@ BotBroker::BotBroker()
             if (event.command.get_command_name() == "devizovekurzy")
             {
 
-                // CURL *curl;
-                // CURLcode res;
-                // std::string readBuffer;
-                // // sudo apt install libcurl4
-                // curl = curl_easy_init();
-                // if (curl)
-                // {
-                //     curl_easy_setopt(curl, CURLOPT_URL,
-                //                      "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/"
-                //                      "kurzy-devizoveho-trhu/kurzy-devizoveho-trhu/denni_kurz.txt");
-                //     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-                //     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+#ifdef USE_CURL
+                CURL *curl;
+                CURLcode res;
+                std::string readBuffer;
+                // sudo apt install libcurl4
+                curl = curl_easy_init();
+                if (curl)
+                {
+                    curl_easy_setopt(curl, CURLOPT_URL,
+                                     "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/"
+                                     "kurzy-devizoveho-trhu/kurzy-devizoveho-trhu/denni_kurz.txt");
+                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+                    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
 
-                //     res = curl_easy_perform(curl);
-                //     if (res != CURLE_OK)
-                //     {
-                //         std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res)
-                //                   << std::endl;
-                //     }
-                //     else
-                //     {
-                //         std::cout << "Downloaded content:\n" << readBuffer << std::endl;
-                //     }
-                //     curl_easy_cleanup(curl);
+                    res = curl_easy_perform(curl);
+                    if (res != CURLE_OK)
+                    {
+                        std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res)
+                                  << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << "Downloaded content:\n" << readBuffer << std::endl;
+                    }
+                    curl_easy_cleanup(curl);
 
-                //     dpp::message msg(event.command.channel_id, readBuffer);
-                //     bot.message_create(msg);
-                // }
+                    dpp::message msg(event.command.channel_id, readBuffer);
+                    bot.message_create(msg);
+                }
+#endif
 
                 event.reply("Ziskat devizove kurzy!");
             }
