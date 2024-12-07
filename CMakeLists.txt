@@ -15,6 +15,7 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
 endif()
 
 # Include of CPM.cmake -----------------------------------
+# Templates https://github.com/cpm-cmake/CPM.cmake/wiki/More-Snippets#cli
 include(cmake/CPM.cmake)
 
 # Start of PackageProject.cmake --------------------------
@@ -130,6 +131,120 @@ CPMAddPackage(
     (HAVE_OPUS_OPUS_H ${OPUS_INCLUDE_DIRS}/opus/opus.h)
 )
 
+
+# Start of libciconv --------------------------------------
+CPMAddPackage(
+    NAME libiconv
+    URL https://ftp.gnu.org/pub/gnu/libiconv/libiconv-1.17.tar.gz
+    DOWNLOAD_ONLY YES
+)
+
+if(libiconv_ADDED)
+    set(LIBICONV_SOURCE_DIR ${libiconv_SOURCE_DIR})
+    set(LIBICONV_BUILD_DIR ${libiconv_BINARY_DIR})
+    set(LIBICONV_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/libiconv-install)
+    file(MAKE_DIRECTORY ${LIBICONV_BUILD_DIR})
+
+    # Define helper variables for CPP and CXXCPP
+    set(CPP_CMD "${CMAKE_C_COMPILER} -E")
+    set(CXXCPP_CMD "${CMAKE_CXX_COMPILER} -E")
+
+    # COMMAND should be used only once per add_custom_target
+    add_custom_target(
+        build_libiconv ALL
+        COMMAND cd ${LIBICONV_SOURCE_DIR} && ./configure --host=${CMAKE_SYSTEM_PROCESSOR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CPP=${CPP_CMD} CXXCPP=${CXXCPP_CMD} --prefix=${LIBICONV_INSTALL_DIR} && $(MAKE) && $(MAKE) install
+    )
+
+    include_directories(${LIBICONV_INSTALL_DIR}/include)
+    link_directories(${LIBICONV_INSTALL_DIR}/lib)
+endif()
+# end of libciconv ----------------------------------------
+
+
+# # Start of libunistring ----------------------------------
+# CPMAddPackage(
+#     NAME libunistring
+#     URL https://ftp.gnu.org/gnu/libunistring/libunistring-1.3.tar.gz
+#     DOWNLOAD_ONLY YES
+# )
+
+# if(libunistring_ADDED)
+#     set(LIBUNISTRING_SOURCE_DIR ${libunistring_SOURCE_DIR})
+#     set(LIBUNISTRING_BUILD_DIR ${libunistring_BINARY_DIR})
+#     set(LIBUNISTRING_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/libunistring-install)
+#     file(MAKE_DIRECTORY ${LIBUNISTRING_BUILD_DIR})
+
+#     add_custom_target(
+#         build_libunistring ALL
+#         COMMAND cd ${LIBUNISTRING_SOURCE_DIR} && ./gitsub.sh pull
+#         COMMAND cd ${LIBUNISTRING_SOURCE_DIR} && ./autogen.sh
+#         COMMAND cd ${LIBUNISTRING_SOURCE_DIR} && ./configure --prefix=${LIBUNISTRING_INSTALL_DIR} --disable-shared
+#         COMMAND $(MAKE) -C ${LIBUNISTRING_SOURCE_DIR}
+#         COMMAND $(MAKE) -C ${LIBUNISTRING_SOURCE_DIR} install
+#     )
+
+#     include_directories(${LIBUNISTRING_INSTALL_DIR}/include)
+#     link_directories(${LIBUNISTRING_INSTALL_DIR}/lib)
+
+# endif()
+
+
+# # Start of libpsl ----------------------------------------
+# CPMAddPackage(
+#     NAME libpsl
+#     GITHUB_REPOSITORY rockdaboot/libpsl
+#     GIT_TAG 0.21.1
+#     DOWNLOAD_ONLY YES
+# )
+
+# if(libpsl_ADDED)
+#     set(LIBPSL_SOURCE_DIR ${libpsl_SOURCE_DIR})
+#     set(LIBPSL_BUILD_DIR ${libpsl_BINARY_DIR})
+#     set(LIBPSL_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/libpsl-install)
+#     file(MAKE_DIRECTORY(${LIBPSL_BUILD_DIR})
+
+#     add_custom_target(
+#         build_libpsl ALL
+#         COMMAND cd ${LIBPSL_SOURCE_DIR} && ./autogen.sh
+#         COMMAND cd ${LIBPSL_SOURCE_DIR} && ./configure --prefix=${LIBPSL_INSTALL_DIR} --disable-shared
+#         COMMAND $(MAKE) -C ${LIBPSL_SOURCE_DIR}
+#         COMMAND $(MAKE) -C ${LIBPSL_SOURCE_DIR} install
+#     )
+
+#     include_directories(${LIBPSL_INSTALL_DIR}/include)
+#     link_directories(${LIBPSL_INSTALL_DIR}/lib)
+# endif()
+# # end of libpsl ------------------------------------------
+
+#set(NGHTTP2_INCLUDE_DIR ${CMAKE_SYSROOT}/usr/include)
+#set(NGHTTP2_LIBRARY ${CMAKE_SYSROOT}/usr/lib/libnghttp2.a)
+
+# Start of curl -------------------------------------------
+
+# CPMAddPackage(
+#     NAME curl
+#     GIT_REPOSITORY https://github.com/curl/curl.git
+#     GIT_TAG curl-8_4_0
+#     OPTIONS
+#         "BUILD_CURL_EXE OFF"
+#         "BUILD_SHARED_LIBS OFF"
+#         "CURL_DISABLE_TESTS ON"
+#         "CMAKE_USE_OPENSSL ON"
+#         "CURL_ZLIB OFF"
+#         "CURL_DISABLE_LDAP ON"
+#         "CURL_DISABLE_RTSP ON"
+#         "CURL_DISABLE_DICT ON"
+#         "CURL_DISABLE_FILE ON"
+#         "CURL_DISABLE_TELNET ON"
+#         "CURL_DISABLE_TFTP ON"
+#         "CURL_DISABLE_POP3 ON"
+#         "CURL_DISABLE_IMAP ON"
+#         "CURL_DISABLE_SMTP ON"
+#         "CURL_DISABLE_SMB ON"
+#         "CURL_DISABLE_MQTT ON"
+#         "CURL_DISABLE_GOPHER ON"
+# )
+
 # Note: globbing sources is considered bad practice as CMake's generators may not detect new files
 # automatically. Keep that in mind when changing files, or explicitly mention them here.
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
@@ -151,7 +266,7 @@ target_compile_options(${PROJECT_NAME} PUBLIC "$<$<COMPILE_LANG_AND_ID:CXX,MSVC>
 
 # Link dependencies
 target_link_libraries(
-    ${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto dpp EmojiTools::EmojiTools opus libssh2
+    ${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto dpp EmojiTools::EmojiTools opus libssh2 ${LIBPSL_INSTALL_DIR}/lib/libpsl.a
 )
 
 target_include_directories(
