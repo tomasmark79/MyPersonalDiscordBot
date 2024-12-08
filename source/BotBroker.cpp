@@ -8,6 +8,9 @@
 #include <libssh2.h>
 #include <iconv.h>
 
+#include <unistr.h>
+#include <unistdio.h>
+
 // #include <libpsl.h>
 
 #include <mydiscordbot/version.h>
@@ -37,6 +40,30 @@ size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 
 BotBroker::BotBroker()
 {
+    uint8_t MAGIC = 0xBA;
+    
+    ucs4_t uc;
+
+    for (uc = 0; uc < 0x80; uc++)
+    {
+        uint8_t buf[5] = {MAGIC, MAGIC, MAGIC, MAGIC, MAGIC};
+        int ret;
+
+        ret = u8_uctomb(buf, uc, 0);
+        //ASSERT(ret == -2);
+        //ASSERT(buf[0] == MAGIC);
+
+        ret = u8_uctomb(buf, uc, 1);
+        //ASSERT(ret == 1);
+        //ASSERT(buf[0] == uc);
+        //ASSERT(buf[1] == MAGIC);
+    }
+    
+    
+    
+    
+    
+    
     std::ifstream tokenFile(OAUTH_TOKEN_FILE);
     std::string BOT_TOKEN;
     if (tokenFile.is_open())
