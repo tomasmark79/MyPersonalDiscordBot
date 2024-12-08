@@ -149,10 +149,16 @@ if(libiconv_ADDED)
     set(CPP_CMD "${CMAKE_C_COMPILER} -E")
     set(CXXCPP_CMD "${CMAKE_CXX_COMPILER} -E")
 
+    # Run the configuration step during the CMake configuration phase
+    execute_process(
+        COMMAND ./configure --host=${CMAKE_SYSTEM_PROCESSOR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CPP=${CPP_CMD} CXXCPP=${CXXCPP_CMD} --prefix=${LIBICONV_INSTALL_DIR}
+        WORKING_DIRECTORY ${LIBICONV_SOURCE_DIR}
+    )
+
     # COMMAND should be used only once per add_custom_target
     add_custom_target(
         build_libiconv ALL
-        COMMAND cd ${LIBICONV_SOURCE_DIR} && ./configure --host=${CMAKE_SYSTEM_PROCESSOR} CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CPP=${CPP_CMD} CXXCPP=${CXXCPP_CMD} --prefix=${LIBICONV_INSTALL_DIR} && $(MAKE) && $(MAKE) install
+        COMMAND $(MAKE) -C ${LIBICONV_SOURCE_DIR} && $(MAKE) -C ${LIBICONV_SOURCE_DIR} install
     )
 
     include_directories(${LIBICONV_INSTALL_DIR}/include)

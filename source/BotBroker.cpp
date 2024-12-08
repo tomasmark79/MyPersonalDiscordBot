@@ -6,6 +6,7 @@
 #include <chrono>
 
 #include <libssh2.h>
+#include <iconv.h>
 
 // #include <libpsl.h>
 
