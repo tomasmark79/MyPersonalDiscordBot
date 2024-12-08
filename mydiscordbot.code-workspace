@@ -95,7 +95,8 @@
 			"typeindex": "cpp",
 			"valarray": "cpp",
 			"variant": "cpp",
-			"text_encoding": "cpp"
+			"text_encoding": "cpp",
+			"unistr.h": "c"
 		},
 		"cmake.ctest.allowParallelJobs": false
 	}
