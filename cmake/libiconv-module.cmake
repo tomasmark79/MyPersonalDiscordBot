@@ -1,3 +1,6 @@
+# LIBICONV MODULE
+# This is a CMake module to build libiconv from source
+# used: ./configure, make, make install, libtool
 # important - Ninja does not work with this code project
 
 function(add_libiconv)
