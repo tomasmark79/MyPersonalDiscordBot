@@ -20,20 +20,12 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
     )
 endif()
 
-# ---- Compiler flags ----
-# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
-
 # ---- Dependencies ----
 include(cmake/CPM.cmake)
 
 include(cmake/openssl-module.cmake)
-#include(cmake/openssl-cmake-module.cmake)
 include(cmake/libiconv-module.cmake)
 include(cmake/libssh2-module.cmake)
-
-set(OPENSSL_API_COMPAT 0x10101000L)
-add_definitions(-DOPENSSL_API_COMPAT=${OPENSSL_API_COMPAT})
 
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.12.0")
 
@@ -50,7 +42,7 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS
 
 add_library(MyDiscordBotLib ${headers} ${sources})
 
-add_dependencies(MyDiscordBotLib OpenSSL::SSL OpenSSL::Crypto OpenSSL::applink)
+# add_dependencies(MyDiscordBotLib OpenSSL::SSL OpenSSL::Crypto OpenSSL::applink)
 
 set_target_properties(MyDiscordBotLib PROPERTIES
     CXX_STANDARD 17
