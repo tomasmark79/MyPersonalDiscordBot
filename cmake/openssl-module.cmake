@@ -10,32 +10,31 @@ function(add_openssl)
         OPTIONS ${OPENSSL_OPTIONS}
     )
 
-    if(openssl_ADDED)
-        set(OPENSSL_CONFIGURE_OPTIONS "no-tests" "no-shared") 
+    # if(openssl_ADDED)
+        # set(OPENSSL_CONFIGURE_OPTIONS "no-tests" "no-shared") 
 
-        if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
-            set(ARCHITECTURE "x86_64")
-            set(TARGET_ARCHITECTURE "linux-x86_64")
-        elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
-            set(ARCHITECTURE "aarch64")
-            set(TARGET_ARCHITECTURE "linux-aarch64")
-        else()
-            message(STATUS "Not tested architecture: ${CMAKE_SYSTEM_PROCESSOR}")
-        endif()
+        # if(CMAKE_SYSTEM_PROCESSOR STREQUAL "x86_64")
+        #     set(ARCHITECTURE "x86_64")
+        #     set(TARGET_ARCHITECTURE "linux-x86_64")
+        # elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "aarch64")
+        #     set(ARCHITECTURE "aarch64")
+        #     set(TARGET_ARCHITECTURE "linux-aarch64")
+        # else()
+        #     message(STATUS "Not tested architecture: ${CMAKE_SYSTEM_PROCESSOR}")
+        # endif()
 
-        set(OPENSSL_OPTIONS
-            OPENSSL_CONFIGURE_OPTIONS ${OPENSSL_CONFIGURE_OPTIONS}
-            CMAKE_SYSTEM_PROCESSOR ${ARCHITECTURE}
-            OPENSSL_TARGET_ARCHITECTURE ${TARGET_ARCHITECTURE}
-            OPENSSL_TARGET_PROCESSOR ${ARCHITECTURE}
-        )
+        # set(OPENSSL_OPTIONS
+        #     OPENSSL_CONFIGURE_OPTIONS ${OPENSSL_CONFIGURE_OPTIONS}
+        #     CMAKE_SYSTEM_PROCESSOR ${ARCHITECTURE}
+        #     OPENSSL_TARGET_ARCHITECTURE ${TARGET_ARCHITECTURE}
+        #     OPENSSL_TARGET_PROCESSOR ${ARCHITECTURE}
+        # )
 
-        include_directories(${OPENSSL_INCLUDE_DIR})
-        link_directories(${openssl_BINARY_DIR}/lib)
+        # include_directories(${OPENSSL_INCLUDE_DIR})
+        # link_directories(${openssl_BINARY_DIR}/lib)
 
-    else()
+    if(NOT openssl_ADDED)
         find_package(openssl REQUIRED)
-
         if(openssl_FOUND)
             message(STATUS "Building with system openssl")
         else()

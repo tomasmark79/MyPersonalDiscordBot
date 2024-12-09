@@ -1,5 +1,7 @@
-/build*
-/.vscode
-/cpm_modules
-.DS_Store
-token.txt
+*/build*
+*/aarch64*
+*/AMD_x86_64*
+*/.vscode
+*/cpm_modules
+*/.DS_Store
+

@@ -28,8 +28,8 @@ if(CMAKE_CROSSCOMPILING)
     add_custom_command(
         TARGET MyDiscordBotStandalone
         POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Running copybuild.sh..."
-        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/copybuild.sh
-        COMMENT "Spouštění copybuild.sh po úspěšném sestavení"
+        COMMAND ${CMAKE_COMMAND} -E echo "Running remote-push.sh..."
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/remote-push.sh
+        COMMENT "Spouštění remote-push.sh po úspěšném sestavení"
     )
 endif()

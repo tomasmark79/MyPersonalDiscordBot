@@ -13,7 +13,7 @@ function(add_libssh2)
     # wait for openssl to be built
     if(libssh2_ADDED)
         add_custom_target(build_libssh2 DEPENDS ${LIBSSH2_LIBRARY})
-        add_dependencies(build_libssh2 OpenSSL::SSL OpenSSL::Crypto)
+        add_dependencies(build_libssh2 OpenSSL::SSL OpenSSL::Crypto OpenSSL::applink)
         set(LIBSSH2_INCLUDE_DIR ${libssh2_SOURCE_DIR}/include)
         set(LIBSSH2_LIBRARY ${libssh2_BINARY_DIR}/src/libssh2.a)
 

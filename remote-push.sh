@@ -1,7 +1,5 @@
 #!/bin/bash
-
-# better rsync
-# AARCH64_BIN_LIB="/home/tomas/dev/cpp/projects/mydiscordbot/build-aarch64"
+# Script for copying build artifacts to remote server
 
 AARCH64_BIN_STAND="/home/tomas/dev/cpp/projects/mydiscordbot/standalone/build-aarch64"
 DEST="tomas@devbox-air:/home/tomas/apps/MyDiscordBot/"

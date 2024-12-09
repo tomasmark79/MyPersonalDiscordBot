@@ -26,9 +26,14 @@ endif()
 
 # ---- Dependencies ----
 include(cmake/CPM.cmake)
+
 include(cmake/openssl-module.cmake)
+#include(cmake/openssl-cmake-module.cmake)
 include(cmake/libiconv-module.cmake)
 include(cmake/libssh2-module.cmake)
+
+set(OPENSSL_API_COMPAT 0x10101000L)
+add_definitions(-DOPENSSL_API_COMPAT=${OPENSSL_API_COMPAT})
 
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.12.0")
 
@@ -44,6 +49,9 @@ file(GLOB_RECURSE sources CONFIGURE_DEPENDS
 )
 
 add_library(MyDiscordBotLib ${headers} ${sources})
+
+add_dependencies(MyDiscordBotLib OpenSSL::SSL OpenSSL::Crypto OpenSSL::applink)
+
 set_target_properties(MyDiscordBotLib PROPERTIES
     CXX_STANDARD 17
 )
@@ -62,7 +70,7 @@ add_dependencies(MyDiscordBotLib build_libssh2)
 target_include_directories(MyDiscordBotLib PRIVATE ${LIBSSH2_INCLUDE_DIR})
 target_link_libraries(MyDiscordBotLib PRIVATE ${LIBSSH2_LIBRARY})
 
-# dpp
+# Ensure dpp is added after OpenSSL
 CPMAddPackage(
     NAME dpp
     GITHUB_REPOSITORY brainboxdotcc/DPP
@@ -73,8 +81,9 @@ CPMAddPackage(
     "DPP_INSTALL ON"
     "DPP_BUILD_TEST OFF"
 )
+
 if(dpp_ADDED)
-    add_dependencies(dpp OpenSSL::SSL OpenSSL::Crypto)
+    add_dependencies(dpp OpenSSL::SSL OpenSSL::Crypto OpenSSL::applink)
     target_include_directories(MyDiscordBotLib PUBLIC ${dpp_SOURCE_DIR}/include)
     target_link_libraries(MyDiscordBotLib PRIVATE dpp)
 endif()
@@ -86,6 +95,7 @@ CPMAddPackage(
     GITHUB_REPOSITORY tomasmark79/EmojiTools
     OPTIONS "EMOJI_INSTALL YES" # create an installable target
 )
+
 if(EmojiTools_ADDED)
     target_include_directories(MyDiscordBotLib PRIVATE ${EmojiTools_SOURCE_DIR}/include)
     target_link_libraries(MyDiscordBotLib PRIVATE EmojiTools::EmojiTools)
