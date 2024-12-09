@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "atomic": "cpp",
+        "string_view": "cpp",
+        "chrono": "cpp"
+    }
+}

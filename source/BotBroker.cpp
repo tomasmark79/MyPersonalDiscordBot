@@ -1,11 +1,11 @@
 #include "MyDiscordBotLib/BotBroker.hpp"
 
 #include "emoji/EmojiWrapper.hpp"
-
 #include <atomic>
 #include <chrono>
 #include <iconv.h>
 #include <libssh2.h>
+
 #include <mydiscordbotlib/version.h>
 
 // #include <unistr.h>
