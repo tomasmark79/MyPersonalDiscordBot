@@ -2,7 +2,7 @@ function(add_openssl)
     CPMAddPackage(
         NAME openssl
         GITHUB_REPOSITORY jimmy-park/openssl-cmake
-        GIT_TAG 3.3.2
+        GIT_TAG 3.4.0
     )
 
     if(NOT openssl_ADDED)

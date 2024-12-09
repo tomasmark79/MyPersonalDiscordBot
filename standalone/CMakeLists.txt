@@ -29,7 +29,7 @@ if(CMAKE_CROSSCOMPILING)
         TARGET MyDiscordBotStandalone
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "Running remote-push.sh..."
-        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/remote-push.sh
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../push-artifacts.sh
         COMMENT "Spouštění remote-push.sh po úspěšném sestavení"
     )
 endif()

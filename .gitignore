@@ -1,6 +1,4 @@
-*/build*
-*/aarch64*
-*/AMD_x86_64*
+/build*
 */.vscode
 */cpm_modules
 */.DS_Store

@@ -1,10 +1,9 @@
 #!/bin/bash
 
-
-# x86_64
-rm -rf ./build/AMD_x86_64/
-cmake -B ./build/AMD_x86_64/ .
-cmake --build ./build/AMD_x86_64/ -- -j"$(nproc)"
+# # x86-64
+# rm -rf ./build/x86-64/
+# cmake -B ./build/x86-64/ .
+# cmake --build ./build/x86-64/ -- -j"$(nproc)"
 
 # aarch64
 rm -rf ./build/aarch64/
