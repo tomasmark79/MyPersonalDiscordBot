@@ -67,7 +67,11 @@ CPMAddPackage(
     NAME dpp
     GITHUB_REPOSITORY brainboxdotcc/DPP
     VERSION 10.0.35
-    OPTIONS "DPP_BUILD_EXAMPLES OFF" "DPP_BUILD_TESTS OFF" "DPP_ENABLE_INSTALL ON"
+    OPTIONS
+    "BUILD_SHARED_LIBS ON" # OFF = hpke issues
+    "BUILD_VOICE_SUPPORT ON"
+    "DPP_INSTALL ON"
+    "DPP_BUILD_TEST OFF"
 )
 if(dpp_ADDED)
     add_dependencies(dpp OpenSSL::SSL OpenSSL::Crypto)
