@@ -1,11 +1,17 @@
 cmake_minimum_required(VERSION 3.14...3.22)
 
+# cross compile command
+# clear && rm -rf build-aarch64/ && cmake -B build-aarch64/ -DCMAKE_TOOLCHAIN_FILE=../aarch64.cmake
+# cmake --build build-aarch64/ -- -j$(nproc)
+
 # ---- Project ----
 project(
-    MyDiscordBot
+    MyDiscordBotProject
     VERSION 0.0.2
-    LANGUAGES C CXX
+    LANGUAGES C CXX ASM
 )
+
+set(CMAKE_BUILD_TYPE Debug)
 
 # ---- Include guards ----
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
@@ -14,24 +20,30 @@ if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
     )
 endif()
 
+# ---- Compiler flags ----
+# set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wno-deprecated-declarations")
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+
 # ---- Dependencies ----
 include(cmake/CPM.cmake)
+include(cmake/openssl-module.cmake)
 include(cmake/libiconv-module.cmake)
+include(cmake/libssh2-module.cmake)
 
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.12.0")
 
 # ---- Create library ----
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h"
-    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp"
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp
 )
 
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS
-    "${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp")
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/*.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/source/*.cpp
+)
 
-# create both static and shared libraries
-add_library(MyDiscordBotLib SHARED ${headers} ${sources})
-
+add_library(MyDiscordBotLib ${headers} ${sources})
 set_target_properties(MyDiscordBotLib PROPERTIES
     CXX_STANDARD 17
 )
@@ -45,16 +57,40 @@ add_dependencies(MyDiscordBotLib build_libiconv)
 target_include_directories(MyDiscordBotLib PRIVATE ${LIBICONV_INCLUDE_DIR})
 target_link_libraries(MyDiscordBotLib PRIVATE ${LIBICONV_LIBRARY})
 
-# Link dependencies
-target_link_libraries(
-    MyDiscordBotLib PRIVATE
-    ${LIBICONV_LIBRARY}
-    ${LIBICONV_SHARED_LIBRARY}
-)
+# libssh2
+add_dependencies(MyDiscordBotLib build_libssh2)
+target_include_directories(MyDiscordBotLib PRIVATE ${LIBSSH2_INCLUDE_DIR})
+target_link_libraries(MyDiscordBotLib PRIVATE ${LIBSSH2_LIBRARY})
 
-# Include directories
+# dpp
+CPMAddPackage(
+    NAME dpp
+    GITHUB_REPOSITORY brainboxdotcc/DPP
+    VERSION 10.0.35
+    OPTIONS "DPP_BUILD_EXAMPLES OFF" "DPP_BUILD_TESTS OFF" "DPP_ENABLE_INSTALL ON"
+)
+if(dpp_ADDED)
+    add_dependencies(dpp OpenSSL::SSL OpenSSL::Crypto)
+    target_include_directories(MyDiscordBotLib PUBLIC ${dpp_SOURCE_DIR}/include)
+    target_link_libraries(MyDiscordBotLib PRIVATE dpp)
+endif()
+
+# EmojiTools
+CPMAddPackage(
+    NAME EmojiTools
+    GIT_TAG main
+    GITHUB_REPOSITORY tomasmark79/EmojiTools
+    OPTIONS "EMOJI_INSTALL YES" # create an installable target
+)
+if(EmojiTools_ADDED)
+    target_include_directories(MyDiscordBotLib PRIVATE ${EmojiTools_SOURCE_DIR}/include)
+    target_link_libraries(MyDiscordBotLib PRIVATE EmojiTools::EmojiTools)
+endif()
+
+# self headers
 target_include_directories(
-    MyDiscordBotLib PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
+    MyDiscordBotLib PUBLIC
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:include/MyDiscordBotLib-${PROJECT_VERSION}>
 )
 
@@ -71,31 +107,9 @@ packageProject(
     COMPATIBILITY SameMajorVersion
 )
 
-# include(cmake/openssl-module.cmake)
-# include(cmake/libssh2-module.cmake)
 # include(cmake/opus-module.cmake)
 
-# # Start of DPP -------------------------------------------
-# CPMAddPackage(
-# NAME dpp
-# GITHUB_REPOSITORY brainboxdotcc/DPP
-# VERSION 10.0.35 GIT_PROGRESS TRUE
-# OPTIONS "DPP_BUILD_EXAMPLES OFF" "DPP_BUILD_TESTS OFF" "DPP_ENABLE_INSTALL ON"
-# # Pass the opus library to DPP
-# set(OPUS_LIBRARIES ${OPUS_LIBRARY})
-# )
-
-# # Start of EmojiTools ------------------------------------
-# CPMAddPackage(
-# NAME EmojiTools
-# GIT_TAG main
-# GITHUB_REPOSITORY tomasmark79/EmojiTools
-# OPTIONS "EMOJI_INSTALL YES" "CMAKE_POSITION_INDEPENDENT_CODE ON"
-# )
-
-# # ---------------------------------------- end of EmojiTools
-
-# # Start of libunistring ----------------------------------
+# Start of libunistring ----------------------------------
 # CPMAddPackage(
 # NAME libunistring
 # URL https://ftp.gnu.org/gnu/libunistring/libunistring-1.3.tar.gz
@@ -205,5 +219,3 @@ packageProject(
 # "CURL_DISABLE_MQTT ON"
 # "CURL_DISABLE_GOPHER ON"
 # )
-
-# CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.12.0")

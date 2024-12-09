@@ -30,6 +30,7 @@ function(add_libiconv)
                 CXX=${CMAKE_CXX_COMPILER}
                 CPP=${CMAKE_C_COMPILER}\ -E
                 CXXCPP=${CMAKE_CXX_COMPILER}\ -E
+                COMMAND ${CMAKE_MAKE_PROGRAM} clean
                 COMMAND ${CMAKE_MAKE_PROGRAM} -j$(nproc)
                 COMMAND ${CMAKE_MAKE_PROGRAM} install
                 COMMENT "CrossBuilding libiconv"
@@ -40,6 +41,7 @@ function(add_libiconv)
                 OUTPUT ${LIBICONV_LIBRARY}
                 COMMAND ./configure --prefix=${LIBICONV_INSTALL_DIR} --enable-shared --enable-static
                 COMMAND ./config.status
+                COMMAND make clean
                 COMMAND make -j$$(nproc)
                 COMMAND make -j$$(nproc) install
                 COMMAND libtool --finish ${LIBICONV_INSTALL_DIR}

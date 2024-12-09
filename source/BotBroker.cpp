@@ -1,27 +1,24 @@
-#include "MyDiscordBot/BotBroker.hpp"
+#include "MyDiscordBotLib/BotBroker.hpp"
 
-//#include "emoji/EmojiWrapper.hpp"
+#include "emoji/EmojiWrapper.hpp"
 
 #include <atomic>
 #include <chrono>
-
-//#include <libssh2.h>
-//#include <iconv.h>
-
-//#include <unistr.h>
-//#include <unistdio.h>
-
-// #include <libpsl.h>
-
+#include <iconv.h>
+#include <libssh2.h>
 #include <mydiscordbotlib/version.h>
 
+// #include <unistr.h>
+// #include <unistdio.h>
+// #include <libpsl.h>
 
 // #define USE_CURL
 
 #ifdef USE_CURL
 #    include "curl/curl.h"
 #endif
-//#include <dpp/dpp.h>
+
+#include <dpp/dpp.h>
 #include <fstream>
 #include <iostream>
 #include <string_view>
@@ -29,7 +26,7 @@
 #include <unordered_map>
 
 std::atomic<bool> stopTimerThread(false);
-// Emoji /*💋*/ emojiWrapper;
+Emoji /*💋*/ emojiWrapper;
 
 // Funkce pro zápis dat z libcurl do std::string
 size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
@@ -40,282 +37,259 @@ size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp)
 
 BotBroker::BotBroker()
 {
-//     // uint8_t MAGIC = 0xBA;
-    
-//     // ucs4_t uc;
 
-//     // for (uc = 0; uc < 0x80; uc++)
-//     // {
-//     //     uint8_t buf[5] = {MAGIC, MAGIC, MAGIC, MAGIC, MAGIC};
-//     //     int ret;
+    std::ifstream tokenFile(OAUTH_TOKEN_FILE);
+    std::string BOT_TOKEN;
+    if (tokenFile.is_open())
+    {
+        std::getline(tokenFile, BOT_TOKEN);
+        tokenFile.close();
+    }
+    else
+    {
+        std::cout << "Unable to open authentication file for reading!" << std::endl;
+        std::cout << OAUTH_TOKEN_FILE << std::endl;
+        return;
+    }
 
-//     //     ret = u8_uctomb(buf, uc, 0);
-//     //     //ASSERT(ret == -2);
-//     //     //ASSERT(buf[0] == MAGIC);
+    dpp::cluster bot(BOT_TOKEN);
 
-//     //     ret = u8_uctomb(buf, uc, 1);
-//     //     //ASSERT(ret == 1);
-//     //     //ASSERT(buf[0] == uc);
-//     //     //ASSERT(buf[1] == MAGIC);
-//     // }
-    
-    
-    
-    
-    
-    
-//     std::ifstream tokenFile(OAUTH_TOKEN_FILE);
-//     std::string BOT_TOKEN;
-//     if (tokenFile.is_open())
-//     {
-//         std::getline(tokenFile, BOT_TOKEN);
-//         tokenFile.close();
-//     }
-//     else
-//     {
-//         std::cout << "Unable to open authentication file for reading!" << std::endl;
-//         std::cout << OAUTH_TOKEN_FILE << std::endl;
-//         return;
-//     }
+    bot.on_log(dpp::utility::cout_logger());
 
-//     dpp::cluster bot(BOT_TOKEN);
+    bot.on_slashcommand(
+        [&bot](auto event)
+        {
+            using EventType = decltype(event);
 
-//     bot.on_log(dpp::utility::cout_logger());
+            // Tímto způsobem zjistíte, jakého typu je 'event'
+            std::cout << typeid(EventType).name() << std::endl;
 
-//     bot.on_slashcommand(
-//         [&bot](auto event)
-//         {
-//             using EventType = decltype(event);
+            if (event.command.get_command_name() == "ping")
+            {
+                event.reply("Pong!");
+            }
 
-//             // Tímto způsobem zjistíte, jakého typu je 'event'
-//             std::cout << typeid(EventType).name() << std::endl;
+            if (event.command.get_command_name() == "emoji")
+            {
+                std::cout << "emoji" << std::endl;
+                std::string randomEmoji;
+                emojiWrapper.getRandomEmoji(randomEmoji);
+                dpp::message msg(event.command.channel_id, randomEmoji);
+                event.reply(msg);
+                std::this_thread::sleep_for(std::chrono::seconds(1));
+            }
 
-//             if (event.command.get_command_name() == "ping")
-//             {
-//                 event.reply("Pong!");
-//             }
+            if (event.command.get_command_name() == "devizovekurzy")
+            {
 
-//             if (event.command.get_command_name() == "emoji")
-//             {
-//                 std::cout << "emoji" << std::endl;
-//                 std::string randomEmoji;
-//                 emojiWrapper.getRandomEmoji(randomEmoji);
-//                 dpp::message msg(event.command.channel_id, randomEmoji);
-//                 event.reply(msg);
-//                 std::this_thread::sleep_for(std::chrono::seconds(1));
-//             }
+#ifdef USE_CURL
+                CURL *curl;
+                CURLcode res;
+                std::string readBuffer;
+                // sudo apt install libcurl4
+                curl = curl_easy_init();
+                if (curl)
+                {
+                    curl_easy_setopt(curl, CURLOPT_URL,
+                                     "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/"
+                                     "kurzy-devizoveho-trhu/kurzy-devizoveho-trhu/denni_kurz.txt");
+                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+                    curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
 
-//             if (event.command.get_command_name() == "devizovekurzy")
-//             {
+                    res = curl_easy_perform(curl);
+                    if (res != CURLE_OK)
+                    {
+                        std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res)
+                                  << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << "Downloaded content:\n" << readBuffer << std::endl;
+                    }
+                    curl_easy_cleanup(curl);
 
-// #ifdef USE_CURL
-//                 CURL *curl;
-//                 CURLcode res;
-//                 std::string readBuffer;
-//                 // sudo apt install libcurl4
-//                 curl = curl_easy_init();
-//                 if (curl)
-//                 {
-//                     curl_easy_setopt(curl, CURLOPT_URL,
-//                                      "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/"
-//                                      "kurzy-devizoveho-trhu/kurzy-devizoveho-trhu/denni_kurz.txt");
-//                     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
-//                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+                    dpp::message msg(event.command.channel_id, readBuffer);
+                    bot.message_create(msg);
+                }
+#endif
 
-//                     res = curl_easy_perform(curl);
-//                     if (res != CURLE_OK)
-//                     {
-//                         std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res)
-//                                   << std::endl;
-//                     }
-//                     else
-//                     {
-//                         std::cout << "Downloaded content:\n" << readBuffer << std::endl;
-//                     }
-//                     curl_easy_cleanup(curl);
+                event.reply("Ziskat devizove kurzy!");
+            }
 
-//                     dpp::message msg(event.command.channel_id, readBuffer);
-//                     bot.message_create(msg);
-//                 }
-// #endif
+            if (event.command.get_command_name() == "getbotinfo")
+            {
+                event.reply("Bot Info");
 
-//                 event.reply("Ziskat devizove kurzy!");
-//             }
+                // get current time
+                std::time_t now
+                    = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+                std::string timeStr = std::ctime(&now);
 
-//             if (event.command.get_command_name() == "getbotinfo")
-//             {
-//                 event.reply("Bot Info");
+                // // get current processor CPU name
+                // char cpuName[1024];
+                // FILE *cpuinfo
+                //     = popen("lscpu | grep 'Model name' | awk '{$1=$2=\"\"; print $0}'", "r");
+                // fgets(cpuName, 1024, cpuinfo);
+                // pclose(cpuinfo);
+                // std::string cpuNameStr = "CPU: ";
+                // cpuNameStr += cpuName;
 
-//                 // get current time
-//                 std::time_t now
-//                     = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-//                 std::string timeStr = std::ctime(&now);
+                // get 7 rows from lscpu bash command
+                std::string lscpuRows[8];
+                FILE *lscpu = popen("lscpu", "r");
+                for (int i = 0; i < 8; i++)
+                {
+                    char row[1024];
+                    fgets(row, 1024, lscpu);
+                    lscpuRows[i] = row;
+                }
+                pclose(lscpu);
+                std::string strCpuInfo = "CPU:\n" + lscpuRows[0] + lscpuRows[1] + lscpuRows[2]
+                                         + lscpuRows[3] + lscpuRows[4] + lscpuRows[5] + lscpuRows[6]
+                                         + lscpuRows[7];
 
-//                 // // get current processor CPU name
-//                 // char cpuName[1024];
-//                 // FILE *cpuinfo
-//                 //     = popen("lscpu | grep 'Model name' | awk '{$1=$2=\"\"; print $0}'", "r");
-//                 // fgets(cpuName, 1024, cpuinfo);
-//                 // pclose(cpuinfo);
-//                 // std::string cpuNameStr = "CPU: ";
-//                 // cpuNameStr += cpuName;
+                // get hostname of running process
+                char hostname[1024];
+                gethostname(hostname, 1024);
+                std::string hostName = "Hostname: ";
+                hostName += hostname;
 
-//                 // get 7 rows from lscpu bash command
-//                 std::string lscpuRows[8];
-//                 FILE *lscpu = popen("lscpu", "r");
-//                 for (int i = 0; i < 8; i++)
-//                 {
-//                     char row[1024];
-//                     fgets(row, 1024, lscpu);
-//                     lscpuRows[i] = row;
-//                 }
-//                 pclose(lscpu);
-//                 std::string strCpuInfo = "CPU:\n" + lscpuRows[0] + lscpuRows[1] + lscpuRows[2]
-//                                          + lscpuRows[3] + lscpuRows[4] + lscpuRows[5] + lscpuRows[6]
-//                                          + lscpuRows[7];
+                // get running processor architecture
+                std::string processorArch = "Processor Architecture: ";
+                processorArch += std::to_string(sizeof(void *) * 8);
+                processorArch += " bit";
 
-//                 // get hostname of running process
-//                 char hostname[1024];
-//                 gethostname(hostname, 1024);
-//                 std::string hostName = "Hostname: ";
-//                 hostName += hostname;
+                // get running OS
+                std::string runningOS = "Running OS: ";
+#ifdef _WIN32
+                runningOS += "Windows";
+#elif __linux__
+                runningOS += "Linux";
+#elif __APPLE__
+                runningOS += "MacOS";
+#endif
 
-//                 // get running processor architecture
-//                 std::string processorArch = "Processor Architecture: ";
-//                 processorArch += std::to_string(sizeof(void *) * 8);
-//                 processorArch += " bit";
+                // get running compiler
+                std::string runningCompiler = "Running Compiler: ";
+#ifdef __clang__
+                runningCompiler += "Clang";
+#elif __GNUC__
+                runningCompiler += "GCC";
+#endif
 
-//                 // get running OS
-//                 std::string runningOS = "Running OS: ";
-// #ifdef _WIN32
-//                 runningOS += "Windows";
-// #elif __linux__
-//                 runningOS += "Linux";
-// #elif __APPLE__
-//                 runningOS += "MacOS";
-// #endif
+                // get running compiler version
+                std::string runningCompilerVersion = "Running Compiler Version: ";
+#ifdef __clang__
+                runningCompilerVersion += __clang_version__;
+#elif __GNUC__
 
-//                 // get running compiler
-//                 std::string runningCompiler = "Running Compiler: ";
-// #ifdef __clang__
-//                 runningCompiler += "Clang";
-// #elif __GNUC__
-//                 runningCompiler += "GCC";
-// #endif
+                runningCompilerVersion += std::to_string(__GNUC__) + "."
+                                          + std::to_string(__GNUC_MINOR__) + "."
+                                          + std::to_string(__GNUC_PATCHLEVEL__);
+#endif
 
-//                 // get running compiler version
-//                 std::string runningCompilerVersion = "Running Compiler Version: ";
-// #ifdef __clang__
-//                 runningCompilerVersion += __clang_version__;
-// #elif __GNUC__
+                // get running C++ standard
+                std::string runningCppStandard = "Running C++ Standard: ";
+#ifdef __cplusplus
+                runningCppStandard += std::to_string(__cplusplus);
+#endif
 
-//                 runningCompilerVersion += std::to_string(__GNUC__) + "."
-//                                           + std::to_string(__GNUC_MINOR__) + "."
-//                                           + std::to_string(__GNUC_PATCHLEVEL__);
-// #endif
+                // get running bot version
+                std::string runningBotVersion = "Running Bot Version: ";
+                runningBotVersion += MYDISCORDBOTLIB_VERSION;
+                runningBotVersion += " | LibSSH2 Version: ";
+                runningBotVersion += LIBSSH2_VERSION;
 
-//                 // get running C++ standard
-//                 std::string runningCppStandard = "Running C++ Standard: ";
-// #ifdef __cplusplus
-//                 runningCppStandard += std::to_string(__cplusplus);
-// #endif
+                std::string botInfoBuf = timeStr + "\n" + hostName + "\n" + strCpuInfo + "\n"
+                                         + processorArch + "\n" + runningOS + "\n" + runningCompiler
+                                         + "\n" + runningCompilerVersion + "\n" + runningCppStandard
+                                         + "\n" + runningBotVersion;
 
-//                 // get running bot version
-//                 std::string runningBotVersion = "Running Bot Version: ";
-//                 runningBotVersion += MYDISCORDBOT_VERSION;
-//                 runningBotVersion += " | LibSSH2 Version: ";
-//                 runningBotVersion += LIBSSH2_VERSION;
+                dpp::message msg(event.command.channel_id, botInfoBuf);
+                bot.message_create(msg);
+            }
 
-//                 std::string botInfoBuf = timeStr + "\n" + hostName + "\n" + strCpuInfo + "\n"
-//                                          + processorArch + "\n" + runningOS + "\n" + runningCompiler
-//                                          + "\n" + runningCompilerVersion + "\n" + runningCppStandard
-//                                          + "\n" + runningBotVersion;
+            if (event.command.get_command_name() == "stopemojitimer")
+            {
+                stopTimerThread.store(true);
+                event.reply("Random Emoji Timer Stopped!");
+            }
 
-//                 dpp::message msg(event.command.channel_id, botInfoBuf);
-//                 bot.message_create(msg);
-//             }
+            if (event.command.get_command_name() == "startemojitimer")
+            {
+                std::cout << "startemojitimer" << std::endl;
+                std::string randomEmoji;
+                emojiWrapper.getRandomEmoji(randomEmoji);
 
-//             if (event.command.get_command_name() == "stopemojitimer")
-//             {
-//                 stopTimerThread.store(true);
-//                 event.reply("Random Emoji Timer Stopped!");
-//             }
+                // reply required
+                dpp::message msg(event.command.channel_id, "OK");
+                event.reply(msg);
 
-//             if (event.command.get_command_name() == "startemojitimer")
-//             {
-//                 std::cout << "startemojitimer" << std::endl;
-//                 std::string randomEmoji;
-//                 emojiWrapper.getRandomEmoji(randomEmoji);
+                std::this_thread::sleep_for(std::chrono::seconds(1));
 
-//                 // reply required
-//                 dpp::message msg(event.command.channel_id, "OK");
-//                 event.reply(msg);
+                stopTimerThread.store(false);
+                std::thread threadTimer(
+                    [&bot, &event]() -> void
+                    {
+                        while (!stopTimerThread.load())
+                        {
+                            std::cout << ". Tick ." << std::endl;
 
-//                 std::this_thread::sleep_for(std::chrono::seconds(1));
+                            std::string randomEmoji;
+                            emojiWrapper.getRandomEmoji(randomEmoji);
 
-//                 stopTimerThread.store(false);
-//                 std::thread threadTimer(
-//                     [&bot, &event]() -> void
-//                     {
-//                         while (!stopTimerThread.load())
-//                         {
-//                             std::cout << ". Tick ." << std::endl;
+                            dpp::message msg(event.command.channel_id, randomEmoji);
+                            bot.message_create(msg);
 
-//                             std::string randomEmoji;
-//                             emojiWrapper.getRandomEmoji(randomEmoji);
+                            std::cout << randomEmoji << std::endl;
+                            std::this_thread::sleep_for(std::chrono::seconds(EMOJI_INTERVAL_SEC));
+                        }
+                    });
 
-//                             dpp::message msg(event.command.channel_id, randomEmoji);
-//                             bot.message_create(msg);
+                threadTimer.detach();
+            }
+        });
 
-//                             std::cout << randomEmoji << std::endl;
-//                             std::this_thread::sleep_for(std::chrono::seconds(EMOJI_INTERVAL_SEC));
-//                         }
-//                     });
+    // Register the commands when the bot is ready - is happening every time the
+    // bot is network ready
+    bot.on_ready(
+        [&bot](auto event)
+        {
+            // Register the commands only once
+            if (dpp::run_once<struct register_bot_commands>())
+            {
+                /* Register the command */
+                dpp::slashcommand command("pm", "Send a private message.", bot.me.id);
 
-//                 threadTimer.detach();
-//             }
-//         });
+                /* Add the option fo`r a user mention that isn't required */
+                command.add_option(
+                    dpp::command_option(dpp::co_mentionable, "user", "The user to message", false));
 
-//     // Register the commands when the bot is ready - is happening every time the
-//     // bot is network ready
-//     bot.on_ready(
-//         [&bot](auto event)
-//         {
-//             // Register the commands only once
-//             if (dpp::run_once<struct register_bot_commands>())
-//             {
-//                 /* Register the command */
-//                 dpp::slashcommand command("pm", "Send a private message.", bot.me.id);
+                /* Register the command */
+                bot.global_command_create(command);
 
-//                 /* Add the option fo`r a user mention that isn't required */
-//                 command.add_option(
-//                     dpp::command_option(dpp::co_mentionable, "user", "The user to message", false));
+                bot.global_command_create(dpp::slashcommand("ping", "Ping pong!", bot.me.id));
 
-//                 /* Register the command */
-//                 bot.global_command_create(command);
+                bot.global_command_create(
+                    dpp::slashcommand("emoji", "Show Random Emoji!", bot.me.id));
 
-//                 bot.global_command_create(dpp::slashcommand("ping", "Ping pong!", bot.me.id));
+                bot.global_command_create(
+                    dpp::slashcommand("startemojitimer", "Start Random Emoji Timer!", bot.me.id));
 
-//                 bot.global_command_create(
-//                     dpp::slashcommand("emoji", "Show Random Emoji!", bot.me.id));
+                bot.global_command_create(
+                    dpp::slashcommand("stopemojitimer", "Stop Random Emoji Timer!", bot.me.id));
 
-//                 bot.global_command_create(
-//                     dpp::slashcommand("startemojitimer", "Start Random Emoji Timer!", bot.me.id));
+                bot.global_command_create(
+                    dpp::slashcommand("devizovekurzy", "Ziskat devizove kurzy!", bot.me.id));
 
-//                 bot.global_command_create(
-//                     dpp::slashcommand("stopemojitimer", "Stop Random Emoji Timer!", bot.me.id));
+                bot.global_command_create(
+                    dpp::slashcommand("getbotinfo", "Ziskat informace o botovi!", bot.me.id));
 
-//                 bot.global_command_create(
-//                     dpp::slashcommand("devizovekurzy", "Ziskat devizove kurzy!", bot.me.id));
+                std::cout << "Commands registered!" << std::endl;
+            }
+        });
 
-//                 bot.global_command_create(
-//                     dpp::slashcommand("getbotinfo", "Ziskat informace o botovi!", bot.me.id));
-
-//                 std::cout << "Commands registered!" << std::endl;
-//             }
-//         });
-
-//     bot.start(dpp::st_wait);
+    bot.start(dpp::st_wait);
 }
 
 BotBroker::~BotBroker() {}
