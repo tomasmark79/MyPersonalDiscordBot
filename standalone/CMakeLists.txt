@@ -24,12 +24,13 @@ set_target_properties(
 
 target_link_libraries(MyDiscordBotStandalone MyDiscordBotLib::MyDiscordBotLib)
 
+# alwats return true to avoid error of compilation when running remote-push.sh no success
 if(CMAKE_CROSSCOMPILING)
     add_custom_command(
         TARGET MyDiscordBotStandalone
         POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "Running remote-push.sh..."
-        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../push-artifacts.sh
+        COMMAND ${CMAKE_COMMAND} -E chdir ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../push-artifacts.sh || true
         COMMENT "Spouštění remote-push.sh po úspěšném sestavení"
     )
 endif()
