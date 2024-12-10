@@ -1,56 +1,39 @@
 {
     "version": "2.0.0",
-    "buildTypes": {
-        "default": "Debug",
-        "types": [
-            "Debug",
-            "Release",
-            "RelWithDebInfo",
-            "MinSizeRel"
-        ]
-    },
     "tasks": [
         {
             "label": "CMake: configure (Library)",
             "type": "shell",
-            "command": "cmake",
+            "command": "${workspaceFolder}/cmake_configure.sh",
             "args": [
-                "-S",
-                "${workspaceFolder}",
-                "-B",
-                "${workspaceFolder}/build/Library",
-                "-DCMAKE_BUILD_TYPE=${input:buildType}",
-                "${input:toolchain}"
+                "${input:architecture}",
+                "${input:buildType}",
+                ".",
+                "library"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "detail": "Generated task for CMake configure with Library folder."
+            "problemMatcher": ["$gcc"],
+            "detail": "Configure CMake for Library."
         },
         {
             "label": "CMake: configure (Standalone)",
             "type": "shell",
-            "command": "cmake",
+            "command": "${workspaceFolder}/cmake_configure.sh",
             "args": [
-                "-S",
-                "${workspaceFolder}/standalone",
-                "-B",
-                "${workspaceFolder}/build/Standalone",
-                "-DCMAKE_BUILD_TYPE=${input:buildType}",
-                "${input:toolchain}"
+                "${input:architecture}",
+                "${input:buildType}",
+                "standalone",
+                "standalone"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": false
             },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "detail": "Generated task for CMake configure with standalone folder."
+            "problemMatcher": ["$gcc"],
+            "detail": "Configure CMake for Standalone."
         },
         {
             "label": "CMake: build (Library)",
@@ -58,7 +41,7 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/build/Library",
+                "${workspaceFolder}/build/${input:architecture}/Library/${input:buildType}",
                 "-j",
                 "$(nproc)"
             ],
@@ -66,12 +49,8 @@
                 "kind": "build",
                 "isDefault": true
             },
-            "dependsOn": [
-                "CMake: configure (Library)"
-            ],
-            "problemMatcher": [
-                "$gcc"
-            ],
+            "dependsOn": ["CMake: configure (Library)"],
+            "problemMatcher": ["$gcc"],
             "detail": "Generated task for CMake build with Library folder."
         },
         {
@@ -80,7 +59,7 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/build/Standalone",
+                "${workspaceFolder}/build/${input:architecture}/Standalone/${input:buildType}",
                 "-j",
                 "$(nproc)"
             ],
@@ -88,12 +67,8 @@
                 "kind": "build",
                 "isDefault": false
             },
-            "dependsOn": [
-                "CMake: configure (Standalone)"
-            ],
-            "problemMatcher": [
-                "$gcc"
-            ],
+            "dependsOn": ["CMake: configure (Standalone)"],
+            "problemMatcher": ["$gcc"],
             "detail": "Generated task for CMake build with standalone folder."
         },
         {
@@ -102,7 +77,7 @@
             "command": "rm",
             "args": [
                 "-rf",
-                "${workspaceFolder}/build/Library"
+                "${workspaceFolder}/build/${input:architecture}/Library/${input:buildType}"
             ],
             "group": "build",
             "problemMatcher": [],
@@ -114,7 +89,7 @@
             "command": "rm",
             "args": [
                 "-rf",
-                "${workspaceFolder}/build/Standalone"
+                "${workspaceFolder}/build/${input:architecture}/Standalone/${input:buildType}"
             ],
             "group": "build",
             "problemMatcher": [],
@@ -126,7 +101,7 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/build/Library",
+                "${workspaceFolder}/build/${input:architecture}/Library/${input:buildType}",
                 "--target",
                 "install"
             ],
@@ -140,7 +115,7 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/build/Standalone",
+                "${workspaceFolder}/build/${input:architecture}/Standalone/${input:buildType}",
                 "--target",
                 "install"
             ],
@@ -161,7 +136,7 @@
                 "--build-config",
                 "${input:buildType}",
                 "--test-dir",
-                "${workspaceFolder}/build/Library"
+                "${workspaceFolder}/build/${input:architecture}/Library/${input:buildType}"
             ],
             "group": "test",
             "problemMatcher": [],
@@ -180,7 +155,7 @@
                 "--build-config",
                 "${input:buildType}",
                 "--test-dir",
-                "${workspaceFolder}/build/Standalone"
+                "${workspaceFolder}/build/${input:architecture}/Standalone/${input:buildType}"
             ],
             "group": "test",
             "problemMatcher": [],
@@ -214,9 +189,7 @@
                 "+"
             ],
             "group": "build",
-            "problemMatcher": [
-                "$gcc"
-            ],
+            "problemMatcher": ["$gcc"],
             "detail": "Generated task for linting C++ files with clang-tidy."
         },
         {
@@ -279,30 +252,45 @@
             "group": "build",
             "problemMatcher": [],
             "detail": "Generated task for formatting CMake files with cmake-format."
+        },
+        {
+            "label": "CMake: build all",
+            "type": "shell",
+            "command": "bash",
+            "args": [
+                "-c",
+                "for arch in native aarch64; do for build in debug release relwithdebinfo minsizerel; do ${workspaceFolder}/cmake_configure.sh $arch $build . library && cmake --build ${workspaceFolder}/build/$arch/library/$build -j $(nproc); ${workspaceFolder}/cmake_configure.sh $arch $build standalone standalone && cmake --build ${workspaceFolder}/build/$arch/standalone/$build -j $(nproc); done; done"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Task to build all possible combinations of architecture and build type."
         }
     ],
     "inputs": [
         {
             "id": "buildType",
             "type": "pickString",
-            "description": "Select the build type",
+            "description": "Vyberte typ buildu",
             "options": [
-                "Debug",
-                "Release",
-                "RelWithDebInfo",
-                "MinSizeRel"
+                "debug",
+                "release",
+                "relwithdebinfo",
+                "minsizerel"
             ],
-            "default": "Debug"
+            "default": "debug"
         },
         {
-            "id": "toolchain",
+            "id": "architecture",
             "type": "pickString",
-            "description": "Select the toolchain file",
+            "description": "Vyberte architekturu",
             "options": [
-                "",
-                "-DCMAKE_TOOLCHAIN_FILE=./aarch64.cmake"
+                "native",
+                "aarch64"
             ],
-            "default": ""
+            "default": "native"
         }
     ]
 }
