@@ -7,7 +7,7 @@ set(CROSS_HOST "arm-linux-gnu") # Upravte dle cílové platformy
 set(CMAKE_SYSROOT /home/tomas/x-tools/aarch64-rpi4-linux-gnu/aarch64-rpi4-linux-gnu/sysroot)
 
 # Specify cross-compilers
-set(CMAKE_C_COMPILER /home/tomas/x-tools/aarch64-rpi4-linux-gnu/bin/aarch64-rpi4-linux-gnu-gcc)
+set(   CMAKE_C_COMPILER /home/tomas/x-tools/aarch64-rpi4-linux-gnu/bin/aarch64-rpi4-linux-gnu-gcc)
 set(CMAKE_CXX_COMPILER /home/tomas/x-tools/aarch64-rpi4-linux-gnu/bin/aarch64-rpi4-linux-gnu-g++)
 set(CMAKE_ASM_COMPILER /home/tomas/x-tools/aarch64-rpi4-linux-gnu/bin/aarch64-rpi4-linux-gnu-as)
 set(CMAKE_LINKER /home/tomas/x-tools/aarch64-rpi4-linux-gnu/bin/aarch64-rpi4-linux-gnu-ld)

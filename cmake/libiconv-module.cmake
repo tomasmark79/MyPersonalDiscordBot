@@ -39,7 +39,7 @@ function(add_libiconv)
             add_custom_command(
                 WORKING_DIRECTORY ${LIBICONV_SOURCE_DIR}
                 OUTPUT ${LIBICONV_LIBRARY}
-                COMMAND ./configure --prefix=${LIBICONV_INSTALL_DIR} --enable-shared --enable-static
+                COMMAND ./configure --prefix=${LIBICONV_INSTALL_DIR} --enable-shared --enable-static CFLAGS=\"-O3 -s\" CXXFLAGS=\"-O3 -s\"
                 COMMAND ./config.status
                 COMMAND make clean
                 COMMAND make -j$$(nproc)

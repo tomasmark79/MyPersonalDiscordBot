@@ -2,17 +2,15 @@
 #define __BOTBROKER_H__
 
 #define OAUTH_TOKEN_FILE "/home/tomas/.discord_oauth.key"
-#define EMOJI_INTERVAL_SEC (int) 600
+#define EMOJI_INTERVAL_SEC (int)600
 
 class BotBroker
 {
-public:
-    
+  public:
     BotBroker();
     ~BotBroker();
 
-private:
-
+  private:
 };
 
 #endif // __BOTBROKER_H__

@@ -1,0 +1,312 @@
+{
+    "version": "2.0.0",
+    "buildTypes": {
+        "default": "Debug",
+        "types": [
+            "Debug",
+            "Release",
+            "RelWithDebInfo",
+            "MinSizeRel"
+        ]
+    },
+    "tasks": [
+        {
+            "label": "CMake: configure (Library)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S",
+                "${workspaceFolder}",
+                "-B",
+                "${workspaceFolder}/build/Library",
+                "-DCMAKE_BUILD_TYPE=${input:buildType}",
+                "${input:toolchain}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Generated task for CMake configure with Library folder."
+        },
+        {
+            "label": "CMake: configure (Standalone)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "-S",
+                "${workspaceFolder}/standalone",
+                "-B",
+                "${workspaceFolder}/build/Standalone",
+                "-DCMAKE_BUILD_TYPE=${input:buildType}",
+                "${input:toolchain}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Generated task for CMake configure with standalone folder."
+        },
+        {
+            "label": "CMake: build (Library)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build/Library",
+                "-j",
+                "$(nproc)"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "dependsOn": [
+                "CMake: configure (Library)"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Generated task for CMake build with Library folder."
+        },
+        {
+            "label": "CMake: build (Standalone)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build/Standalone",
+                "-j",
+                "$(nproc)"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "dependsOn": [
+                "CMake: configure (Standalone)"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Generated task for CMake build with standalone folder."
+        },
+        {
+            "label": "CMake: clean (Library)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build/Library",
+                "--target",
+                "clean"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Generated task for CMake clean with Library folder."
+        },
+        {
+            "label": "CMake: clean (Standalone)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build/Standalone",
+                "--target",
+                "clean"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Generated task for CMake clean with standalone folder."
+        },
+        {
+            "label": "CMake: install (Library)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build/Library",
+                "--target",
+                "install"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Generated task for CMake install with Library folder."
+        },
+        {
+            "label": "CMake: install (Standalone)",
+            "type": "shell",
+            "command": "cmake",
+            "args": [
+                "--build",
+                "${workspaceFolder}/build/Standalone",
+                "--target",
+                "install"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Generated task for CMake install with standalone folder."
+        },
+        {
+            "label": "CMake: test (Library)",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--output-on-failure",
+                "-C",
+                "${input:buildType}",
+                "-T",
+                "test",
+                "--build-config",
+                "${input:buildType}",
+                "--test-dir",
+                "${workspaceFolder}/build/Library"
+            ],
+            "group": "test",
+            "problemMatcher": [],
+            "detail": "Generated task for CMake test with Library folder."
+        },
+        {
+            "label": "CMake: test (Standalone)",
+            "type": "shell",
+            "command": "ctest",
+            "args": [
+                "--output-on-failure",
+                "-C",
+                "${input:buildType}",
+                "-T",
+                "test",
+                "--build-config",
+                "${input:buildType}",
+                "--test-dir",
+                "${workspaceFolder}/build/Standalone"
+            ],
+            "group": "test",
+            "problemMatcher": [],
+            "detail": "Generated task for CMake test with standalone folder."
+        },
+        {
+            "label": "CMake: lint",
+            "type": "shell",
+            "command": "find",
+            "args": [
+                "${workspaceFolder}",
+                "-not",
+                "-path",
+                "\"${workspaceFolder}/build/*\"",
+                "\\(",
+                "-name",
+                "\"*.c\"",
+                "-o",
+                "-name",
+                "\"*.cpp\"",
+                "-o",
+                "-name",
+                "\"*.h\"",
+                "-o",
+                "-name",
+                "\"*.hpp\"",
+                "\\)",
+                "-exec",
+                "clang-tidy",
+                "{}",
+                "+"
+            ],
+            "group": "build",
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "detail": "Generated task for linting C++ files with clang-tidy."
+        },
+        {
+            "label": "CMake: format",
+            "type": "shell",
+            "command": "find",
+            "args": [
+                "${workspaceFolder}",
+                "-not",
+                "-path",
+                "\"${workspaceFolder}/build/*\"",
+                "-not",
+                "-path",
+                "\"${workspaceFolder}/CMakeFiles/*\"",
+                "\\(",
+                "-name",
+                "\"*.c\"",
+                "-o",
+                "-name",
+                "\"*.cpp\"",
+                "-o",
+                "-name",
+                "\"*.h\"",
+                "-o",
+                "-name",
+                "\"*.hpp\"",
+                "\\)",
+                "-exec",
+                "clang-format",
+                "-i",
+                "{}",
+                "+"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Generated task for formatting C++ files with clang-format."
+        },
+        {
+            "label": "CMake: cmake-format",
+            "type": "shell",
+            "command": "find",
+            "args": [
+                "${workspaceFolder}",
+                "-not",
+                "-path",
+                "\"${workspaceFolder}/build/*\"",
+                "\\(",
+                "-name",
+                "\"CMakeLists.txt\"",
+                "-o",
+                "-name",
+                "\"*.cmake\"",
+                "\\)",
+                "-exec",
+                "cmake-format",
+                "-i",
+                "{}",
+                "+"
+            ],
+            "group": "build",
+            "problemMatcher": [],
+            "detail": "Generated task for formatting CMake files with cmake-format."
+        }
+    ],
+    "inputs": [
+        {
+            "id": "buildType",
+            "type": "pickString",
+            "description": "Select the build type",
+            "options": [
+                "Debug",
+                "Release",
+                "RelWithDebInfo",
+                "MinSizeRel"
+            ],
+            "default": "Debug"
+        },
+        {
+            "id": "toolchain",
+            "type": "pickString",
+            "description": "Select the toolchain file",
+            "options": [
+                "",
+                "-DCMAKE_TOOLCHAIN_FILE=${workspaceFolder}/path/to/your/toolchain.cmake"
+            ],
+            "default": ""
+        }
+    ]
+}

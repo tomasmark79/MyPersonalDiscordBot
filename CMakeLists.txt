@@ -11,8 +11,6 @@ project(
     LANGUAGES C CXX ASM
 )
 
-set(CMAKE_BUILD_TYPE Debug)
-
 # ---- Include guards ----
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
     message(FATAL_ERROR
@@ -56,11 +54,21 @@ target_compile_options(MyDiscordBotLib PUBLIC
 add_dependencies(MyDiscordBotLib build_libiconv)
 target_include_directories(MyDiscordBotLib PRIVATE ${LIBICONV_INCLUDE_DIR})
 target_link_libraries(MyDiscordBotLib PRIVATE ${LIBICONV_LIBRARY})
+set_target_properties(build_libiconv PROPERTIES
+    
+    COMPILE_FLAGS "-O3 -s"
+    LINK_FLAGS "-s"
+)
 
 # libssh2
 add_dependencies(MyDiscordBotLib build_libssh2)
 target_include_directories(MyDiscordBotLib PRIVATE ${LIBSSH2_INCLUDE_DIR})
 target_link_libraries(MyDiscordBotLib PRIVATE ${LIBSSH2_LIBRARY})
+set_target_properties(build_libssh2 PROPERTIES
+    
+    COMPILE_FLAGS "-O3 -s"
+    LINK_FLAGS "-s"
+)
 
 # Ensure dpp is added after OpenSSL
 CPMAddPackage(
