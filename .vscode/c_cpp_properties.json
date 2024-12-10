@@ -7,7 +7,7 @@
                 "/home/tomas/.cache/CPM/**"
             ],
             "defines": [],
-            "compilerPath": "/usr/bin/gcc",
+            "compilerPath": null,
             "cStandard": "c17",
             "cppStandard": "c++17",
             "intelliSenseMode": "${default}"
