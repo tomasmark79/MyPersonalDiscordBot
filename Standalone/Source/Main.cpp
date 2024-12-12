@@ -27,7 +27,6 @@ auto main(int argc, char **argv) -> int
 - Ctrl+Alt+  N  build S
 
 - Ctrl+Alt+  L  clean Lib
-
 - Ctrl+Alt+  K  clean S
 
 - Ctrl+Alt   I  install Lib

@@ -14,7 +14,7 @@ DESTINATION_DIR="$4"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-if [ "$ARCHITECTURE" = "aarch64" ]; then
+if [ "$(echo "$ARCHITECTURE" | tr '[:upper:]' '[:lower:]')" = "aarch64" ]; then
     TOOLCHAIN_ARG="-DCMAKE_TOOLCHAIN_FILE=$SCRIPT_DIR/aarch64.cmake"
 else
     TOOLCHAIN_ARG=""

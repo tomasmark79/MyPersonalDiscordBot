@@ -15,7 +15,7 @@ project(
 if(PROJECT_SOURCE_DIR STREQUAL PROJECT_BINARY_DIR)
     message(
         FATAL_ERROR
-            "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there."
+        "In-source builds not allowed. Please make a new directory (called a build directory) and run CMake from there."
     )
 endif()
 
@@ -26,8 +26,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules"
 # ---- Dependencies ----
 include(cmake/CPM.cmake)
 
-message (STATUS "dpp_ADDED: ${dpp_ADDED}")
-
 # PackageProject.cmake will be used to make our target installable
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.12.0")
 CPMAddPackage("gh:fmtlib/fmt#11.0.2")
@@ -35,10 +33,10 @@ CPMAddPackage("gh:fmtlib/fmt#11.0.2")
 # Note: globbing sources is considered bad practice as CMake's generators may not detect new files
 # automatically. Keep that in mind when changing files, or explicitly mention them here.
 file(GLOB_RECURSE headers CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/Include/*.hpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include/*.hpp
 )
 file(GLOB_RECURSE sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Source/*.c
-     ${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp
 )
 
 # ---- Create library ----
@@ -69,23 +67,38 @@ endif()
 # self headers
 target_include_directories(
     ${PROJECT_LIBRARY_NAME} PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/Include>
-                  $<INSTALL_INTERFACE:Include/${PROJECT_LIBRARY_NAME}-${PROJECT_VERSION}>
-                  
+    $<INSTALL_INTERFACE:Include/${PROJECT_LIBRARY_NAME}-${PROJECT_VERSION}>
 )
+
+CPMAddPackage(
+    NAME openssl
+    GITHUB_REPOSITORY jimmy-park/openssl-cmake
+    GIT_TAG 3.4.0
+)
+if(openssl_ADDED)   
+else()
+    find_package(openssl REQUIRED)
+    if(openssl_FOUND)
+        message(STATUS "Building with system openssl")
+    else()
+        message(FATAL_ERROR "Downloading openssl failed and system openssl not found :(")
+    endif()
+endif()
 
 CPMAddPackage(
     NAME dpp
     GITHUB_REPOSITORY brainboxdotcc/DPP
     VERSION 10.0.35
     OPTIONS "BUILD_SHARED_LIBS ON" # OFF = hpke issues
-            "BUILD_VOICE_SUPPORT ON" "DPP_INSTALL ON" "DPP_BUILD_TEST OFF"
+    "BUILD_VOICE_SUPPORT ON" "DPP_INSTALL ON" "DPP_BUILD_TEST OFF"
 )
+
 if(dpp_ADDED)
-    # add_dependencies(dpp OpenSSL::SSL OpenSSL::Crypto OpenSSL::applink)
+    add_dependencies(dpp OpenSSL::SSL OpenSSL::Crypto OpenSSL::applink)
     target_include_directories(${PROJECT_LIBRARY_NAME} PUBLIC ${dpp_SOURCE_DIR}/include)
-    message (STATUS "dpp_ADDED: ${dpp_ADDED}")
-    message (STATUS "dpp_SOURCE_DIR: ${dpp_SOURCE_DIR}")
-    message (STATUS "dpp_BINARY_DIR: ${dpp_BINARY_DIR}")
+    message(STATUS "dpp_ADDED: ${dpp_ADDED}")
+    message(STATUS "dpp_SOURCE_DIR: ${dpp_SOURCE_DIR}")
+    message(STATUS "dpp_BINARY_DIR: ${dpp_BINARY_DIR}")
     target_link_libraries(MyDiscordBotLib PUBLIC dpp)
 endif()
 
