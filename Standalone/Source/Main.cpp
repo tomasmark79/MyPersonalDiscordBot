@@ -1,7 +1,6 @@
 #include <MyDiscordBotLib/MyDiscordBotLib.hpp>
-#include <mydiscordbotlib/version.h>
-
 #include <iostream>
+#include <mydiscordbotlib/version.h>
 
 // Start here
 // 👉 ./ProjectRenamer.sh <old_lib_name> <new_lib_name> <old_standalone_name> <new_standalone_name>
