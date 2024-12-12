@@ -3,7 +3,7 @@
 set -e
 
 if [ "$#" -ne 4 ]; then
-    echo "Použití: $0 <ARCHITECTURE> <BUILD_TYPE> <SOURCE_DIR> <DESTINATION_DIR>"
+    echo "Usage: $0 <ARCHITECTURE> <BUILD_TYPE> <SOURCE_DIR> <DESTINATION_DIR>"
     exit 1
 fi
 
@@ -20,7 +20,7 @@ else
     TOOLCHAIN_ARG=""
 fi
 
-BUILD_DIR="build/$ARCHITECTURE/$DESTINATION_DIR/$BUILD_TYPE"
+BUILD_DIR="Build/$ARCHITECTURE/$DESTINATION_DIR/$BUILD_TYPE"
 mkdir -p "$BUILD_DIR"
 
 cmake -S "$SOURCE_DIR" \

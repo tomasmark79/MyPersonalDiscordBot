@@ -1,6 +1,8 @@
+/Build*
+/build*
+
 /CMakeFiles*
 /CMakeCache.txt
-/build*
 */cpm_modules
-*/.DS_Store
 
+*/.DS_Store

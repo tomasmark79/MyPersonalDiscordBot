@@ -1,0 +1,67 @@
+[
+    {
+        "key": "ctrl+alt+c",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: configure (Library)"
+    },
+    {
+        "key": "ctrl+alt+s",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: configure (Standalone)"
+    },
+    {
+        "key": "ctrl+alt+b",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: build (Library)"
+    },
+    {
+        "key": "ctrl+alt+n",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: build (Standalone)"
+    },
+    {
+        "key": "ctrl+alt+l",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: clean (Library)"
+    },
+    {
+        "key": "ctrl+alt+k",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: clean (Standalone)"
+    },
+    {
+        "key": "ctrl+alt+i",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: install (Library)"
+    },
+    {
+        "key": "ctrl+alt+j",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: install (Standalone)"
+    },
+    {
+        "key": "ctrl+alt+t",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: test (Library)"
+    },
+    {
+        "key": "ctrl+alt+u",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: test (Standalone)"
+    },
+    {
+        "key": "ctrl+alt+r",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: lint"
+    },
+    {
+        "key": "ctrl+alt+f",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: format"
+    },
+    {
+        "key": "ctrl+alt+m",
+        "command": "workbench.action.tasks.runTask",
+        "args": "CMake: cmake-format"
+    }
+]

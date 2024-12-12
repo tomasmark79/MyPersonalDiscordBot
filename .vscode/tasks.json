@@ -4,12 +4,12 @@
         {
             "label": "CMake: configure (Library)",
             "type": "shell",
-            "command": "${workspaceFolder}/cmake_configure.sh",
+            "command": "${workspaceFolder}/CMakeConfigure.sh",
             "args": [
                 "${input:architecture}",
                 "${input:buildType}",
                 ".",
-                "library"
+                "Library"
             ],
             "group": {
                 "kind": "build",
@@ -21,12 +21,12 @@
         {
             "label": "CMake: configure (Standalone)",
             "type": "shell",
-            "command": "${workspaceFolder}/cmake_configure.sh",
+            "command": "${workspaceFolder}/CMakeConfigure.sh",
             "args": [
                 "${input:architecture}",
                 "${input:buildType}",
-                "standalone",
-                "standalone"
+                "Standalone",
+                "Standalone"
             ],
             "group": {
                 "kind": "build",
@@ -41,7 +41,7 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/build/${input:architecture}/Library/${input:buildType}",
+                "${workspaceFolder}/Build/${input:architecture}/Library/${input:buildType}",
                 "-j",
                 "$(nproc)"
             ],
@@ -59,7 +59,7 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/build/${input:architecture}/Standalone/${input:buildType}",
+                "${workspaceFolder}/Build/${input:architecture}/Standalone/${input:buildType}",
                 "-j",
                 "$(nproc)"
             ],
@@ -69,7 +69,7 @@
             },
             "dependsOn": ["CMake: configure (Standalone)"],
             "problemMatcher": ["$gcc"],
-            "detail": "Generated task for CMake build with standalone folder."
+            "detail": "Generated task for CMake build with Standalone folder."
         },
         {
             "label": "CMake: clean (Library)",
@@ -77,7 +77,7 @@
             "command": "rm",
             "args": [
                 "-rf",
-                "${workspaceFolder}/build/${input:architecture}/Library/${input:buildType}"
+                "${workspaceFolder}/Build/${input:architecture}/Library/${input:buildType}"
             ],
             "group": "build",
             "problemMatcher": [],
@@ -89,7 +89,7 @@
             "command": "rm",
             "args": [
                 "-rf",
-                "${workspaceFolder}/build/${input:architecture}/Standalone/${input:buildType}"
+                "${workspaceFolder}/Build/${input:architecture}/Standalone/${input:buildType}"
             ],
             "group": "build",
             "problemMatcher": [],
@@ -101,7 +101,7 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/build/${input:architecture}/Library/${input:buildType}",
+                "${workspaceFolder}/Build/${input:architecture}/Library/${input:buildType}",
                 "--target",
                 "install"
             ],
@@ -115,13 +115,13 @@
             "command": "cmake",
             "args": [
                 "--build",
-                "${workspaceFolder}/build/${input:architecture}/Standalone/${input:buildType}",
+                "${workspaceFolder}/Build/${input:architecture}/Standalone/${input:buildType}",
                 "--target",
                 "install"
             ],
             "group": "build",
             "problemMatcher": [],
-            "detail": "Generated task for CMake install with standalone folder."
+            "detail": "Generated task for CMake install with Standalone folder."
         },
         {
             "label": "CMake: test (Library)",
@@ -136,7 +136,7 @@
                 "--build-config",
                 "${input:buildType}",
                 "--test-dir",
-                "${workspaceFolder}/build/${input:architecture}/Library/${input:buildType}"
+                "${workspaceFolder}/Build/${input:architecture}/Library/${input:buildType}"
             ],
             "group": "test",
             "problemMatcher": [],
@@ -155,11 +155,11 @@
                 "--build-config",
                 "${input:buildType}",
                 "--test-dir",
-                "${workspaceFolder}/build/${input:architecture}/Standalone/${input:buildType}"
+                "${workspaceFolder}/Build/${input:architecture}/Standalone/${input:buildType}"
             ],
             "group": "test",
             "problemMatcher": [],
-            "detail": "Generated task for CMake test with standalone folder."
+            "detail": "Generated task for CMake test with Standalone folder."
         },
         {
             "label": "CMake: lint",
@@ -169,7 +169,7 @@
                 "${workspaceFolder}",
                 "-not",
                 "-path",
-                "\"${workspaceFolder}/build/*\"",
+                "\"${workspaceFolder}/Build/*\"",
                 "\\(",
                 "-name",
                 "\"*.c\"",
@@ -200,7 +200,7 @@
                 "${workspaceFolder}",
                 "-not",
                 "-path",
-                "\"${workspaceFolder}/build/*\"",
+                "\"${workspaceFolder}/Build/*\"",
                 "-not",
                 "-path",
                 "\"${workspaceFolder}/CMakeFiles/*\"",
@@ -235,7 +235,7 @@
                 "${workspaceFolder}",
                 "-not",
                 "-path",
-                "\"${workspaceFolder}/build/*\"",
+                "\"${workspaceFolder}/Build/*\"",
                 "\\(",
                 "-name",
                 "\"CMakeLists.txt\"",
@@ -259,7 +259,7 @@
             "command": "bash",
             "args": [
                 "-c",
-                "for arch in native aarch64; do for build in debug release relwithdebinfo minsizerel; do ${workspaceFolder}/cmake_configure.sh $arch $build . library && cmake --build ${workspaceFolder}/build/$arch/library/$build -j $(nproc); ${workspaceFolder}/cmake_configure.sh $arch $build standalone standalone && cmake --build ${workspaceFolder}/build/$arch/standalone/$build -j $(nproc); done; done"
+                "for arch in Native Aarch64; do for Build in Debug Release RelWithDebInfo MinSizeRel; do ${workspaceFolder}/CMakeConfigure.sh $arch $build . Library && cmake --build ${workspaceFolder}/Build/$arch/Library/$build -j $(nproc); ${workspaceFolder}/CMakeConfigure.sh $arch $build Standalone Standalone && cmake --build ${workspaceFolder}/Build/$arch/Standalone/$build -j $(nproc); done; done"
             ],
             "group": {
                 "kind": "build",
@@ -273,24 +273,24 @@
         {
             "id": "buildType",
             "type": "pickString",
-            "description": "Vyberte typ buildu",
+            "description": "Select build type",
             "options": [
-                "debug",
-                "release",
-                "relwithdebinfo",
-                "minsizerel"
+                "Debug",
+                "Release",
+                "RelWithDebInfo",
+                "MinSizeRel"
             ],
-            "default": "debug"
+            "default": "Debug"
         },
         {
             "id": "architecture",
             "type": "pickString",
-            "description": "Vyberte architekturu",
+            "description": "Select architecture (toolchain)",
             "options": [
-                "native",
-                "aarch64"
+                "Native",
+                "Aarch64"
             ],
-            "default": "native"
+            "default": "Native"
         }
     ]
 }

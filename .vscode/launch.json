@@ -5,7 +5,7 @@
             "name": "Debug CMake Target",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/native/app/MyDiscordBotStandalone", // Nahraďte cestou k binárnímu souboru
+            "program": "${workspaceFolder}/Build/Native/Standalone/Debug/MyDiscordBot", /* 🪲 */
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
