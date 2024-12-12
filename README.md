@@ -1,5 +1,10 @@
-# rewritting of MyDiscordBot project is in progress
+# My Discord Bot
 
+This repository provides a simple CMake project configuration for setting up and building a Discord bot server using the D++ framework. It includes a basic implementation to help you get started quickly.
+
+### notice 👇
+
+*Below you can also find the documentation for the template from which this project is made. I leave this documentation attached for completeness.*
 # MarkWare VCMake 😎
 
 VSCode CMake Modern C/C++ Template 🚀
