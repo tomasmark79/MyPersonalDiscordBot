@@ -5,162 +5,117 @@ This repository provides a simple CMake project configuration for setting up and
 ### notice 👇
 
 *Below you can also find the documentation for the template from which this project is made. I leave this documentation attached for completeness.*
-# MarkWare VCMake 😎
 
-VSCode CMake Modern C/C++ Template 🚀
+
+# MarkWare VCMake Template 🎁
+v1.1.0rc2 
+
+---
+
+### Project Overview
+
+- Another C++ template based on a modern structured foundation.
+- This template incorporates the best ideas from environments like **VSCode**, **Modern CMake**, **CPM**, **ModernCppStarter**, and **C/C++**.
+- It serves as a CMake wrapper replacement for the official CMake extension, which did not meet my specific needs.
+
+#### The Fact
+
+With this project and its settings, you can start developing in C++ within a few seconds.
+
+### This C++ Template Project Consists of Two Parts:
+
+- A C++ library
+- A C++ standalone application that links with the library
+  
+### Implemented Features 
+
+✅ - VSCode tasks for comfort  
+✅ - VSCode key bindings template  
+✅ - VSCode C/C++ debugger launcher  
+✅ - Project renamer is awesome  
+✅ - Debug - **F5**  
+✅ - Interactive menu selection for all CMake tasks - **F7**  
+✅ - Configure  
+✅ - Cross Compile  
+✅ - Clean  
+✅ - Install  
+✅ - Collect licenses **generating third_party.txt**  
+✅ - C/C++ Lint - **ctrl+alt+l**  
+✅ - C/C++ format (clang) - **ctrl+alt+m**  
+✅ - CMake format - **ctrl+alt+f**
+
+### TODO
+
+- port to Windows, Mac
+- some tests, sanitizing, ...
+
+---
+
+### Code Codex
+
+I am using 🐫amel🐫ode🐫apitals.  
+One exception: No capital letter in the "include" folder is intentional!
 
 ### Quick Start
 
-https://github.com/user-attachments/assets/a4ea71f7-7e01-4d77-a4cb-1dbc4ab33088
-
 ```bash
 sudo apt-get update
-sudo apt-get install build-essential manpages-dev
+sudo apt-get install build-essential cmake -y
 git clone https://github.com/tomasmark79/MarkWareVCMake
 cd MarkWareVCMake/
 code .
 ```
 
-In workspace ./Standalone/Source/Main.cpp:
+#### Rename your Library and Standalone in seconds
 
-```cpp
-#include <VCMLib/VCMLib.hpp>
-#include <vcmlib/version.h>
-
-#include <iostream>
-
-// Start here
-// 👉 ./ProjectRenamer.sh <old_lib_name> <new_lib_name> <old_standalone_name> <new_standalone_name>
-// 👉 build 🔨 your new standalone app CTRL + ALT + N
-
-// Description
-// It is the first file that gets compiled and linked into the final executable.
-// This is the main entry point for the standalone application.
-// It includes the VCMLib header file and creates an instance of the VCMLib class.
-
-auto main(int argc, char **argv) -> int
-{
-    VCMLib Lib;
-    std::cout << "Version: " << VCMLIB_VERSION << std::endl;
-
-    return 0;
-}
+```bash
+./TemplateRenamer.sh <old_lib_name> <new_lib_name> <old_standalone_name> <new_standalone_name>
 ```
 
-### Project Overview
-A project that takes the best ideas from worlds like VSCode, CMake, CPM, ModernAppStarter, and C++.
+---
 
-### This C++ template consists of two projects:
-- A C++ library
-- A C++ application that links with the library
-  
-**Together, they form one solution.**
+### Template Parts Explanation
 
-### Briefly about the template
-This project structure offers exceptional capabilities and flexibility, combining the best features from multiple sources. New components, additional libraries, and more can be easily integrated. It is a modern C++ project with a CMake configurator, maintaining compatibility to link with C if necessary. The template is configured with CMake and enhanced with the CPM Packaging System, allowing us to leverage modern project management capabilities in C/C++.
+#### `.vscode/c_cpp_properties.json`
 
-One of the key features of this template is its preparation for cross-compilation with support for Raspberry Pi 4. For cross-compilation, you will need to build your own toolchain.
+CPM is able to use cache. The path to the cache folder is stored here.
 
-Another important feature of this template is its built-in build system and CMake control, integrated into VSCode. The instructions are included in the template and are very straightforward. Simply clone the repository from GitHub into a folder, open it in VSCode, and compile with the native compiler immediately. Everything can be set up within minutes.
+#### `.vscode/tasks.json` and `CMakeConfigure.sh`
 
-I look forward to seeing your contributions!
+Both files are used to smoothly glue CMake and VSCode. The result is a light and robust mechanism for controlling all CMake tasks.
 
-Currently, only Linux is supported. As soon as I get to Windows or Mac, or someone contributes, we will create extensions for these OS as well.
+#### `.vscode/launch.json`
 
-### Implemented Features ✅Project renamer
+It is the debugger definition. Thanks to predictability, it is defined out of the box. ;-)
 
-- CMake modules
-- Native code debug 🐞
-- Native compilation
-- Cro- ss compilation
-- Configuration
-- Build
-- Install
-- Test
-- Lint whole project
-- Clang-format for the whole project
-- CMake-format for the whole project
+#### `.vscode/keybindings.json`
 
-### ToDo
-- Tests
+My own keybindings. If you want to use them, you need to copy/paste the content to your user settings in `~/.config/Code/${user}/keybindings.json`.
 
-### Rules
-- FileNamesAndFoldersWithCapitalsIsGoodPractice
-- No rules, only freedom
+---
 
-### Configuration ⚙️
+### Thank You 
 
-#### Properties
+*To all the awesome people who share the same mindset as me* 🙏
 
-Cache for CPM headers required in project
+### Thank to those
 
-`.vscode/c_cpp_properties.json`
+Use those links to get more documentation to used technologies in my template.
 
-#### Implemented Tasks 🛠️
-
-A major part of a lightweight yet robust CMake toolchain mechanism
-
-`.vscode/tasks.json`
-
-#### Debugger configuration 🐞
-
-Debug Targets. You should to edit path to your Standalone target
-
-`.vscode/launch.json`
-
-#### ToolChain helper 🔧
-
-Cross Compile Helper for CMake ToolChain selection
-
-`cmake_configure.sh`
-
-#### Keyboard shortcuts giving the comfort to this project ⌨️
-
-- Ctrl+Alt+  C  configure Lib
-- Ctrl+Alt+  S  configure Standalone
-
-- Ctrl+Alt+  B  **build** Lib
-- Ctrl+Alt+  N  **build** Standalone
-
-- Ctrl+Alt+  L  clean Lib
-- Ctrl+Alt+  K  clean Standalone
-
-- Ctrl+Alt+  I  install Lib
-- Ctrl+Alt+  J  install Standalone
-
-- Ctrl+Alt+  T  test Lib
-- Ctrl+Alt+  U  test Standalone
-
-- Ctrl+Alt+  R  lint
-- Ctrl+Alt+  F  format
-- Ctrl+Alt+  M  cmake-format
-
-`~/.config/Code/User/keybindings.json`
-
-### Thanks 🙏
-
-*to all the awesome people who share the same mindset as me*
-
-### and thanks to those 🌟
-
-GitHub CoPilot
-https://github.com
-
-Kitware - CMake
 https://cmake.org
 
-VSCode IDE
-https://code.visualstudio.com/license
-
-Modern Cpp Starter
 https://github.com/TheLartians/ModernCppStarter
 
-Copyright (c) 2019-2022 Lars Melchior and contributors
 https://github.com/cpm-cmake/CPM.cmake
 
-### About me 👨‍💻
+https://github.com/cpm-cmake/CPMLicenses.cmake.git
 
-"The result of hundreds of hours (two weeks straight) of incredible fun. Time seemed to stand still. The outcome is a template that takes C++ development to a whole new level.
+
+---
+
+### About Me 👨‍💻
+
+"The result of a lot of hours of incredible fun. Time seemed to stand still. The outcome is a template that takes C++ development to a whole new level. 
     
 "Buy me a coffee ☕🍵 or spare some time. 🙂"
 
@@ -170,4 +125,13 @@ Bitcoin: 3JMZR6SQo65kLAxxxXKrVE7nBKrixbPgSZ
 Ethereum: 0x7a6C564004EdecFf8DD9EAd8bD4Bbc5D2720BeE7
 ```
 
-Thank you, Tomáš Mark.
+I look forward to seeing your contributions!
+
+### License
+I built the project primarily for myself and for my future projects. Nevertheless, if we use the project, we should adhere to the licensing policy. Therefore, I have implemented the package `CPMLicenses.cmake`, which automatically scans all source directories of your CPM.cmake dependencies and finds any file that starts with LICENSE or LICENCE, appending the content to an output file that you can use as a license disclaimer. If no license is found for a package, a warning will be issued in the output during license collection.
+
+
+Copyright (c) Tomáš Mark 2024 
+
+
+
