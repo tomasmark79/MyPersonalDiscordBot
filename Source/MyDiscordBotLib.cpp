@@ -4,11 +4,12 @@
 #include <iostream>
 #include <memory>
 
-/* Start build 🔨 with CTRL + ALT + B */
-
 MyDiscordBotLib::MyDiscordBotLib()
 {
-    std::cout << "-- MyDiscordBot Library --" << std::endl;
+    EmojiToolsLib /*💋*/ emojiTools;
+    std::string emoji;
+    
+    std::cout << "-- MyDiscordBot Library Linked --" << " " << emojiTools.getRandomEmoji(emoji) << std::endl;
     initCluster();
 }
 
