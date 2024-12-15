@@ -1,5 +1,7 @@
 #include "MyDiscordBotLib/MyDiscordBotLib.hpp"
 
+// #include <curl/curl.h>
+
 #include <EmojiToolsLib/EmojiToolsLib.hpp>
 #include <iostream>
 #include <memory>

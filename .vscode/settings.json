@@ -85,6 +85,7 @@
         "valarray": "cpp",
         "variant": "cpp",
         "text_encoding": "cpp",
-        "expected": "cpp"
+        "expected": "cpp",
+        "queue": "cpp"
     }
 }
