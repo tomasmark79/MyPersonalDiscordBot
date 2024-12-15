@@ -7,6 +7,7 @@ This repository provides a simple CMake project configuration for setting up and
 *Below you can also find the documentation for the template from which this project is made. I leave this documentation attached for completeness.*
 
 
+
 # MarkWare VCMake Template 🎁
 v1.1.0rc2 
 
@@ -74,6 +75,20 @@ code .
 
 ---
 
+#### How to update the template to the latest version in my project?
+
+Just copy and replace the core of the template:
+
+- `./vscode/` folder
+- `TemplateRenamer.sh` file
+- `CMakeController.sh` file
+
+Carefully inspect and check the differences in `CMakeLists.txt` for any updates.  
+
+Carefully inspect and check the differences in `Standalone/CMakeLists.txt` for any updates.  
+
+That's all.
+
 ### Template Parts Explanation
 
 #### `.vscode/c_cpp_properties.json`
@@ -131,7 +146,4 @@ I look forward to seeing your contributions!
 I built the project primarily for myself and for my future projects. Nevertheless, if we use the project, we should adhere to the licensing policy. Therefore, I have implemented the package `CPMLicenses.cmake`, which automatically scans all source directories of your CPM.cmake dependencies and finds any file that starts with LICENSE or LICENCE, appending the content to an output file that you can use as a license disclaimer. If no license is found for a package, a warning will be issued in the output during license collection.
 
 
-Copyright (c) Tomáš Mark 2024 
-
-
-
+Copyright (c) Tomáš Mark 2024
