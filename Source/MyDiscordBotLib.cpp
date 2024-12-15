@@ -1,6 +1,6 @@
 #include "MyDiscordBotLib/MyDiscordBotLib.hpp"
 
-#include <emoji/EmojiWrapper.hpp>
+#include <EmojiToolsLib/EmojiToolsLib.hpp>
 #include <iostream>
 #include <memory>
 
@@ -78,7 +78,8 @@ void MyDiscordBotLib::onReady(std::unique_ptr<dpp::cluster> &bot)
                     "emoji", "Show random emoji character to the chat!", bot->me.id));
 
                 bot->global_command_create(dpp::slashcommand(
-                    "fewemojies", "Show random number of random emoji characters in interval!", bot->me.id));
+                    "fewemojies", "Show random number of random emoji characters in interval!",
+                    bot->me.id));
 
                 bot->global_command_create(
                     dpp::slashcommand("noemoji", "Stop to all incomming emojies!", bot->me.id));

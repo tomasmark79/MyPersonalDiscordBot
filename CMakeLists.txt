@@ -53,15 +53,13 @@ target_compile_options(
 
 # EmojiTools
 CPMAddPackage(
-    NAME EmojiTools
+    NAME EmojiToolsLib
     GIT_TAG main
     GITHUB_REPOSITORY tomasmark79/EmojiTools
-    OPTIONS "EMOJI_INSTALL YES" # create an installable target
+    OPTIONS "EMOJI_INSTALL NO" # create an installable target
 )
-
-if(EmojiTools_ADDED)
-    # target_include_directories(MarkWareVCMakeLibrary PRIVATE ${EmojiTools_SOURCE_DIR}/include)
-    target_link_libraries(${PROJECT_LIBRARY_NAME} PRIVATE EmojiTools::EmojiTools)
+if(EmojiToolsLib_ADDED)
+    target_link_libraries(${PROJECT_LIBRARY_NAME} PRIVATE name.digitalspace.www::EmojiToolsLib)
 endif()
 
 # self headers
