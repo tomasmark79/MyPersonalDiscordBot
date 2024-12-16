@@ -1,10 +1,7 @@
-# LIBICONV MODULE
-# This is a CMake module to build libiconv from source
-# used: ./configure, make, make install, libtool
-# important - Ninja does not work with this code project
+# LIBICONV MODULE This is a CMake module to build libiconv from source used: ./configure, make, make
+# install, libtool important - Ninja does not work with this code project
 
-# native - tested
-# aarch64 - tested
+# native - tested aarch64 - tested
 
 function(add_libiconv)
     CPMAddPackage(
@@ -14,8 +11,7 @@ function(add_libiconv)
     )
 
     if(libiconv_ADDED)
-        #set(LIBICONV_BUILD_DIR ${libiconv_BINARY_DIR})
-        #file(MAKE_DIRECTORY ${LIBICONV_BUILD_DIR})
+        # set(LIBICONV_BUILD_DIR ${libiconv_BINARY_DIR}) file(MAKE_DIRECTORY ${LIBICONV_BUILD_DIR})
         set(LIBICONV_SOURCE_DIR ${libiconv_SOURCE_DIR})
         set(LIBICONV_INSTALL_DIR ${CMAKE_BINARY_DIR}/_deps/libiconv-install)
         set(LIBICONV_LIBRARY ${LIBICONV_INSTALL_DIR}/lib/libiconv.a)
@@ -24,15 +20,11 @@ function(add_libiconv)
             add_custom_command(
                 WORKING_DIRECTORY ${LIBICONV_SOURCE_DIR}
                 OUTPUT ${LIBICONV_LIBRARY}
-                COMMAND ./configure
-                --host=${CROSS_HOST}
-                --prefix=${LIBICONV_INSTALL_DIR}
-                --enable-shared
-                --enable-static
-                CC=${CMAKE_C_COMPILER}
-                CXX=${CMAKE_CXX_COMPILER}
-                CPP=${CMAKE_C_COMPILER}\ -E
-                CXXCPP=${CMAKE_CXX_COMPILER}\ -E
+                COMMAND
+                    ./configure --host=${CROSS_HOST} --prefix=${LIBICONV_INSTALL_DIR} --Debug
+                    enable-pie no-docs no-apps --enable-shared --enable-static
+                    CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CPP=${CMAKE_C_COMPILER}\ -E
+                    CXXCPP=${CMAKE_CXX_COMPILER}\ -E
                 COMMAND ${CMAKE_MAKE_PROGRAM} clean
                 COMMAND ${CMAKE_MAKE_PROGRAM} -j$(nproc)
                 COMMAND ${CMAKE_MAKE_PROGRAM} install
@@ -42,7 +34,8 @@ function(add_libiconv)
             add_custom_command(
                 WORKING_DIRECTORY ${LIBICONV_SOURCE_DIR}
                 OUTPUT ${LIBICONV_LIBRARY}
-                COMMAND ./configure --prefix=${LIBICONV_INSTALL_DIR} --enable-shared --enable-static CFLAGS=\"-O3 -s\" CXXFLAGS=\"-O3 -s\"
+                COMMAND ./configure --prefix=${LIBICONV_INSTALL_DIR} --enable-shared --enable-static
+                        CFLAGS=\"-O3 -s\" CXXFLAGS=\"-O3 -s\"
                 COMMAND ./config.status
                 COMMAND make clean
                 COMMAND make -j$$(nproc)
