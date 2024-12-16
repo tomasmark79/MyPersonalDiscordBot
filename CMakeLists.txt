@@ -58,6 +58,13 @@ target_compile_options(
     # conformance
 )
 
+# self headers
+target_include_directories(
+    ${PROJECT_LIBRARY_NAME}
+    PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/Include>
+    $<INSTALL_INTERFACE:Include/${PROJECT_LIBRARY_NAME}-${PROJECT_VERSION}>
+)
+
 # EmojiTools native - tested aarch64 - tested
 CPMAddPackage(
     NAME EmojiToolsLib
@@ -67,137 +74,15 @@ CPMAddPackage(
 )
 
 if(EmojiToolsLib_ADDED)
-    target_link_libraries(${PROJECT_LIBRARY_NAME} PRIVATE name.digitalspace.www::EmojiToolsLib)
+    target_link_libraries(${PROJECT_LIBRARY_NAME}
+        PRIVATE name.digitalspace.www::EmojiToolsLib)
 endif()
 
-# self headers
-target_include_directories(
-    ${PROJECT_LIBRARY_NAME}
-    PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/Include>
-    $<INSTALL_INTERFACE:Include/${PROJECT_LIBRARY_NAME}-${PROJECT_VERSION}>
-)
-
-# xiph/opus native - tested aarch64 - tested
-CPMAddPackage(
-    NAME opus
-    GITHUB_REPOSITORY xiph/opus
-    GIT_TAG v1.5.2
-    OPTIONS "OPUS_BUILD_SHARED_LIBRARY ${BUILD_SHARED_LIBS}" # switching only here
-    "OPUS_BUILD_PROGRAMS OFF" "OPUS_BUILD_TESTING OFF"
-    "CMAKE_POSITION_INDEPENDENT_CODE ON" # -fPIC
-)
-
-if(opus_ADDED)
-    set(OPUS_INSTALACE_DIR ${opus_SOURCE_DIR}/opus-install)
-
-    set(OPUS_INCLUDE_DIRS ${OPUS_INSTALACE_DIR}/include) # for dpp voice support
-    set(HAVE_OPUS_OPUS_H ${OPUS_INSTALACE_DIR}/include/opus/opus.h) # for dpp voice support
-    set(OPUS_SHARED_LIBRARY ${OPUS_INSTALACE_DIR}/lib/libopus.so) # for dpp voice support
-    set(OPUS_LIBRARIES ${OPUS_INSTALACE_DIR}/lib/libopus.a) # for dpp voice support
-
-    message(STATUS "Debug ${OPUS_INSTALACE_DIR}"
-    ) # .cache/CPM/opus/65aae5875a39f28127ba1291a9b942f8bb9ce310/opus-install
-    message(STATUS "Debug ${opus_SOURCE_DIR}"
-    ) # .cache/CPM/opus/65aae5875a39f28127ba1291a9b942f8bb9ce310
-    message(STATUS "Debug ${opus_BINARY_DIR}") # ./Build/Aarch64/Standalone/Debug/_deps/opus-build
-    message(STATUS "Debug ${CMAKE_CURRENT_SOURCE_DIR}") # /MyDiscordBot
-    message(STATUS "Debug ${CMAKE_CURRENT_BINARY_DIR}"
-    ) # /MyDiscordBot/Build/Aarch64/Standalone/Debug/_deps/mydiscordbotlib-build
-
-    # Nastavení instalačního adresáře
-    set_target_properties(opus PROPERTIES CMAKE_INSTALL_PREFIX ${OPUS_INSTALACE_DIR})
-
-    # install
-    install(
-        TARGETS opus
-        ARCHIVE DESTINATION ${OPUS_INSTALACE_DIR}/lib
-        LIBRARY DESTINATION ${OPUS_INSTALACE_DIR}/lib
-        RUNTIME DESTINATION ${OPUS_INSTALACE_DIR}/bin
-        INCLUDES
-        DESTINATION ${OPUS_INSTALACE_DIR}/include
-    )
-
-    # install
-    add_custom_target(
-        opus_install ALL COMMAND ${CMAKE_COMMAND} --install ${opus_BINARY_DIR} --prefix
-        ${OPUS_INSTALACE_DIR}
-    )
-
-    # install after build opus
-    add_dependencies(opus_install opus)
-
-    target_link_libraries(${PROJECT_LIBRARY_NAME} PUBLIC ${OPUS_INSTALACE_DIR}/lib/libopus.a)
-
-    target_include_directories(${PROJECT_LIBRARY_NAME} PUBLIC ${OPUS_INSTALACE_DIR}/include)
-endif()
+# xiph/opus
+include(cmake/xiph-opus.cmake)
 
 # mwopenssl
-CPMAddPackage(
-    NAME mwopenssl
-    URL https://github.com/openssl/openssl/releases/download/openssl-3.4.0/openssl-3.4.0.tar.gz
-    DOWNLOAD_ONLY YES
-)
-
-if(mwopenssl_ADDED)
-    set(OPENSSL_LIB_DIR ${mwopenssl_SOURCE_DIR}/mwopenssl-install-${CMAKE_SYSTEM_PROCESSOR})
-    set(OPENSSL_INCLUDE_DIR ${OPENSSL_LIB_DIR}/include)
-
-    set(OPENSSL_CRYPTO_LIBRARY ${OPENSSL_LIB_DIR}/lib/libcrypto.a)
-    set(OPENSSL_SSL_LIBRARY ${OPENSSL_LIB_DIR}/lib/libssl.a)
-    set(OPENSSL_APPLINK_LIBRARY ${OPENSSL_LIB_DIR}/lib/applink.c)
-
-    message(STATUS "mwopenssl_SOURCE_DIR: ${mwopenssl_SOURCE_DIR}")
-    message(STATUS "OPENSSL_INCLUDE_DIR: ${OPENSSL_INCLUDE_DIR}")
-    message(STATUS "OPENSSL_LIB_DIR: ${OPENSSL_LIB_DIR}")
-    message(STATUS "OPENSSL_CRYPTO_LIBRARY: ${OPENSSL_CRYPTO_LIBRARY}")
-    message(STATUS "OPENSSL_SSL_LIBRARY: ${OPENSSL_SSL_LIBRARY}")
-    message(STATUS "OPENSSL_APPLINK_LIBRARY: ${OPENSSL_APPLINK_LIBRARY}")
-
-    # tolower
-    string(TOLOWER "${CMAKE_BUILD_TYPE}" CMAKE_BUILD_TYPE)
-    set(OPENSSL_BUILD_TYPE "--${CMAKE_BUILD_TYPE}")
-
-    if(CMAKE_CROSSCOMPILING)
-        if(NOT EXISTS ${OPENSSL_CRYPTO_LIBRARY} OR NOT EXISTS ${OPENSSL_SSL_LIBRARY})
-            add_custom_command(
-                OUTPUT ${OPENSSL_CRYPTO_LIBRARY} ${OPENSSL_SSL_LIBRARY}
-                WORKING_DIRECTORY ${mwopenssl_SOURCE_DIR}
-                COMMAND ./Configure linux-aarch64 ${OPENSSL_BUILD_TYPE} --libdir=${OPENSSL_LIB_DIR}/lib
-                no-docs enable-pie
-                --prefix=${OPENSSL_LIB_DIR} --openssldir=${CMAKE_SYSROOT} CC=${CMAKE_C_COMPILER}
-                CXX=${CMAKE_CXX_COMPILER} CPP=${CMAKE_C_COMPILER}\ -E
-                CXXCPP=${CMAKE_CXX_COMPILER}\ -E
-                COMMAND ${CMAKE_MAKE_PROGRAM} clean
-                COMMAND ${CMAKE_MAKE_PROGRAM} -j$(nproc)
-                COMMAND ${CMAKE_MAKE_PROGRAM} install -j$(nproc)
-                COMMENT "Cross-building openssl"
-            )
-        else()
-            message(STATUS "OpenSSL libraries already exist, skipping build step")
-        endif()
-    else()
-        if(NOT EXISTS ${OPENSSL_CRYPTO_LIBRARY} OR NOT EXISTS ${OPENSSL_SSL_LIBRARY})
-            add_custom_command(
-                OUTPUT ${OPENSSL_CRYPTO_LIBRARY} ${OPENSSL_SSL_LIBRARY}
-                WORKING_DIRECTORY ${mwopenssl_SOURCE_DIR}
-                COMMAND ./Configure linux-x86_64 ${OPENSSL_BUILD_TYPE} --
-                libdir=${OPENSSL_LIB_DIR}/lib
-                no-docs enable-pie
-                --prefix=${OPENSSL_LIB_DIR} --openssldir=${OPENSSL_LIB_DIR}
-                COMMAND ${CMAKE_MAKE_PROGRAM} clean
-                COMMAND ${CMAKE_MAKE_PROGRAM} -j$(nproc)
-                COMMAND ${CMAKE_MAKE_PROGRAM} install -j$(nproc)
-                COMMENT "Native-building openssl"
-            )
-        else()
-            message(STATUS "OpenSSL libraries already exist, skipping build step")
-        endif()
-    endif()
-
-    add_custom_target(build-openssl DEPENDS ${OPENSSL_CRYPTO_LIBRARY} ${OPENSSL_SSL_LIBRARY})
-    add_dependencies(${PROJECT_LIBRARY_NAME} build-openssl)
-    target_include_directories(${PROJECT_LIBRARY_NAME} PUBLIC ${OPENSSL_INCLUDE_DIR})
-endif()
+include(cmake/mw-openssl.cmake)
 
 # dpp library, native, aarch64, shared, static
 CPMAddPackage(
@@ -217,7 +102,7 @@ if(dpp_ADDED)
     )
 
     install(TARGETS dppstatic EXPORT MyDiscordBotLibTargets)
-    
+
     # include dpp headers
     target_include_directories(dpp PUBLIC ${OPUS_INSTALACE_DIR}/include) # headersfor dpp voice support - else # include <opus/opus.h> errors
 
