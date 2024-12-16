@@ -2,6 +2,13 @@
     /* (c) Tomáš Mark 2024 */
     "version": "2.0.0",
     "tasks": [
+        {   /* clear terminal */
+            "label": "clear terminal",
+            "type": "shell",
+            "command": "clear",
+            "group": "none",
+            "problemMatcher": []
+        },
         {
             /* CMAKE TASKS */
             "label": "CMake Tasks",
@@ -17,7 +24,10 @@
                 "isDefault": true
             },
             "detail": "CMake Tasks",
-            "problemMatcher": []
+            "problemMatcher": [],
+            "dependsOn": [
+                "clear terminal"
+            ]
         },
         {
             /* LINT */
