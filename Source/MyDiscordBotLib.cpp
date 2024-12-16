@@ -5,13 +5,17 @@
 #include <EmojiToolsLib/EmojiToolsLib.hpp>
 #include <iostream>
 #include <memory>
+#include <openssl/crypto.h>
+#include <openssl/ssl.h>
 
 MyDiscordBotLib::MyDiscordBotLib()
 {
     EmojiToolsLib /*💋*/ emojiTools;
     std::string emoji;
+
+    std::cout << "-- MyDiscordBot Library Linked --" << " " << emojiTools.getRandomEmoji(emoji)
+              << std::endl;
     
-    std::cout << "-- MyDiscordBot Library Linked --" << " " << emojiTools.getRandomEmoji(emoji) << std::endl;
     initCluster();
 }
 
