@@ -1,5 +1,4 @@
-# native - tested
-# aarch64 - tested
+# madler/zlib
 CPMAddPackage(
     NAME zlib
     GITHUB_REPOSITORY madler/zlib
