@@ -41,7 +41,7 @@ add_library(${PROJECT_LIBRARY_NAME} ${headers} ${sources})
 target_compile_features(${PROJECT_LIBRARY_NAME} PUBLIC cxx_std_17)
 
 # ---- Library options
-target_compile_options(${PROJECT_LIBRARY_NAME} PRIVATE "-Wall" "-Wextra" "-Wpedantic")
+# target_compile_options(${PROJECT_LIBRARY_NAME} PRIVATE "-Wall" "-Wextra" "-Wpedantic")
 
 # header-only libraries change all PUBLIC flags to INTERFACE and create an interface target:
 # <add_library(${PROJECT_LIBRARY_NAME} INTERFACE)>
