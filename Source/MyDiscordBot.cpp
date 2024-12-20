@@ -4,11 +4,6 @@
 #include <iostream>
 #include <mydiscordbot/version.h>
 
-#ifdef ENABLE_OPENSSL
-#include <openssl/crypto.h>
-#include <openssl/ssl.h>
-#endif
-
 #include "bzlib.h"
 #include <curl/curl.h>
 
@@ -25,14 +20,12 @@ MyDiscordBot::MyDiscordBot()
     std::cout << "-- MyDiscordBot Library Linked --" << " "
               << emojiTools.getRandomEmoji(emoji) << std::endl;
 
-    initCluster();
-
-#ifdef OPENSSL_VERSION
-    std::cout << "--- " << OPENSSL_VERSION_TEXT << " linked ---" << std::endl;
-#endif
 
     std::cout << "--- " << curl_version() << " linked ---" << std::endl;
     std::cout << "--- " << BZ2_bzlibVersion() << " linked ---" << std::endl;
+
+    initCluster();
+
 }
 
 MyDiscordBot::~MyDiscordBot()
