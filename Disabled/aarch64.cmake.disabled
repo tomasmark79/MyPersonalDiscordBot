@@ -1,3 +1,5 @@
+# (c) Tomáš Mark 2024
+
 # Set system name and processor
 set(CMAKE_SYSTEM_NAME Linux)
 set(CMAKE_SYSTEM_PROCESSOR aarch64)

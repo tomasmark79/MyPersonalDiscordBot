@@ -6,7 +6,8 @@
             "name": "Debug CMake Target",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/Build/Native/Standalone/Debug/MyDiscordBot", /* 🪲 */
+            "program": "${workspaceFolder}/Build/Standalone/Native/Debug/MyPersonalDiscordBot", /* 🪲 */
+            /* "program": "${workspaceFolder}/Build/Standalone/Native/RelWithDebInfo/MyPersonalDiscordBot", */ /* 🪲 */
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

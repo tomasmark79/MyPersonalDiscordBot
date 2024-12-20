@@ -21,6 +21,13 @@ new_lib_name_lower=$(echo "$new_lib_name" | tr '[:upper:]' '[:lower:]')
 old_lib_name_upper=$(echo "$old_lib_name" | tr '[:lower:]' '[:upper:]')
 new_lib_name_upper=$(echo "$new_lib_name" | tr '[:lower:]' '[:upper:]')
 
+
+# new_lib_name and new_standalone_name has not to be same
+if [ "$new_lib_name" == "$new_standalone_name" ]; then
+    echo "Error: new_lib_name and new_standalone_name has to be different"
+    exit 1
+fi
+
 # List of files where the project names should be changed
 files=(
     ".vscode/launch.json"

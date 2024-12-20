@@ -1,20 +1,22 @@
-#ifndef __MYDISCORDBOTLIB_H__
-#define __MYDISCORDBOTLIB_H__
+#ifndef __MYDISCORDBOT_H__
+#define __MYDISCORDBOT_H__
 
-#include <dpp/dpp.h>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <string>
+#include "dpp/dpp.h"
 
-#define OAUTH_TOKEN_FILE "/home/tomas/.discord_oauth.key"
+#define OAUTH_TOKEN_FILE   "/home/tomas/.discord_oauth.key"
 #define EMOJI_INTERVAL_SEC (int)600
 
-class MyDiscordBotLib
+// Library declaration
+
+class MyDiscordBot
 {
   public:
-    MyDiscordBotLib();
-    ~MyDiscordBotLib();
+    MyDiscordBot();
+    ~MyDiscordBot();
 
   protected:
     std::unique_ptr<dpp::cluster> bot;
@@ -26,4 +28,4 @@ class MyDiscordBotLib
     void slashCommands(std::unique_ptr<dpp::cluster> &bot);
 };
 
-#endif // __MYDISCORDBOTLIB_H__
+#endif // __MYDISCORDBOT_H__

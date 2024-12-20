@@ -4,7 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/home/tomas/.cache/CPM/**"
+                "/home/tomas/.cache/CPM/**",
+                "/home/tomas/.conan2/**"
             ],
             "defines": [],
             "compilerPath": null,

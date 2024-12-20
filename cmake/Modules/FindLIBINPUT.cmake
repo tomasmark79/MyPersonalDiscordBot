@@ -1,5 +1,0 @@
-find_package(PkgConfig)
-pkg_check_modules(LIBINPUT REQUIRED libinput)
-
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(LIBINPUT DEFAULT_MSG LIBINPUT_FOUND)

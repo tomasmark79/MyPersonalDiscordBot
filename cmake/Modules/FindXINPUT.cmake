@@ -1,5 +1,0 @@
-find_package(PkgConfig)
-pkg_check_modules(XINPUT REQUIRED xi)
-
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(XINPUT DEFAULT_MSG XINPUT_FOUND)

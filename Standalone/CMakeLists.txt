@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 3.14 FATAL_ERROR)
 
-# ---- Project attributes ----
-set(PROJECT_STANDALONE_NAMESPACE name.digitalspace.www)
-set(PROJECT_STANDALONE_NAME MyDiscordBot) # for change use ./ProjectRenamer.sh
+# (c) Tomáš Mark 2024
 
-project(${PROJECT_STANDALONE_NAME} LANGUAGES C CXX)
+# ---- Project attributes ----
+set(PROJECT_STANDALONE_NAMESPACE dsdotname)
+set(PROJECT_STANDALONE_NAME MyPersonalDiscordBot) # for change use ./ProjectRenamer.sh
+
+project(${PROJECT_STANDALONE_NAME} LANGUAGES C CXX ASM)
 
 # --- Import tools ----
 include(../cmake/tools.cmake)
@@ -12,7 +14,11 @@ include(../cmake/tools.cmake)
 # ---- Dependencies ----
 include(../cmake/CPM.cmake)
 
-CPMAddPackage(NAME MyDiscordBotLib SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
+# ---- Conan dependencies ----
+# Replace 'CURL' and 'OpenSSL' with actual dependencies specified in your conanfile.txt
+
+CPMAddPackage(NAME MyDiscordBot SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/..)
+find_package(dpp CONFIG REQUIRED)
 
 # ---- Create standalone executable ----
 file(GLOB sources CONFIGURE_DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp
@@ -25,4 +31,6 @@ set_target_properties(
     ${PROJECT_STANDALONE_NAME} PROPERTIES CXX_STANDARD 17 OUTPUT_NAME "${PROJECT_STANDALONE_NAME}"
 )
 
-target_link_libraries(${PROJECT_STANDALONE_NAME} name.digitalspace.www::MyDiscordBotLib)
+target_link_libraries(
+    ${PROJECT_STANDALONE_NAME} PRIVATE dsdotname::MyDiscordBot dpp::dpp
+)

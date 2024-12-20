@@ -2,7 +2,7 @@
     /* (c) Tomáš Mark 2024 */
     "version": "2.0.0",
     "tasks": [
-        {   /* clear terminal */
+        { /* clear terminal */
             "label": "clear terminal",
             "type": "shell",
             "command": "clear",
@@ -16,7 +16,7 @@
             "command": "${workspaceFolder}/CMakeController.sh",
             "args": [
                 "${input:taskName}",
-                "${input:archBuildType}",
+                "${input:buildArch}",
                 "${input:buildType}"
             ],
             "group": {
@@ -131,27 +131,39 @@
         {
             "id": "taskName",
             "type": "pickString",
-            "description": "Select CMake task",
+            "description": "Select task",
             "options": [
-                "CMake: configure (Standalone)",
-                "CMake: build (Standalone)",
-                "CMake: clean (Standalone)",
-                "CMake: install (Standalone)",
-                "CMake: test (Standalone)",
-                "CMake: collect licenses (Standalone)",
-                "CMake: configure (Library)",
-                "CMake: build (Library)",
-                "CMake: clean (Library)",
-                "CMake: install (Library)",
-                "CMake: test (Library)",
-                "CMake: collect licenses (Library)",
+                "Build 🔨",
+                "Rebuild 🧹⚔️⚙️🔨",
+                " ",
+                "Configure ⚙️",
+                "Conan ⚔️",
+                "Clean 🧹",
+                "Install 📌",
+                "Licenses 📜",
+                " ",
+                "Build Standalone",
+                "Rebuild Standalone",
+                "Configure Standalone",
+                "Conan Standalone",
+                "Clean Standalone",
+                "Install Standalone",
+                "Licenses Standalone",
+                " ",
+                "Build Library",
+                "Rebuild Library",
+                "Configure Library",
+                "Conan Library",
+                "Clean Library",
+                "Install Library",
+                "Licenses Library",
             ],
-            "default": "CMake: build (Standalone)"
+            "default": "Build 🔨"
         },
         {
-            "id": "archBuildType",
+            "id": "buildArch",
             "type": "pickString",
-            "description": "Select architecture",
+            "description": "Select target architecture",
             "options": [
                 "Native",
                 "Aarch64"
@@ -161,7 +173,7 @@
         {
             "id": "buildType",
             "type": "pickString",
-            "description": "Select build type",
+            "description": "Select type of build",
             "options": [
                 "Debug",
                 "Release",
