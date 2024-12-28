@@ -9,11 +9,11 @@
 
 #define OAUTH_TOKEN_FILE   "/home/tomas/.discord_oauth.key"
 #define EMOJI_INTERVAL_SEC (int)600
-#define URL_EXCHANGE_RATES_CZ                                                  \
-    "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/"  \
+#define URL_EXCHANGE_RATES_CZ                                                                      \
+    "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/"                      \
     "kurzy-devizoveho-trhu/denni_kurz.txt"
 
-# define URL_COIN_GECKO "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
+#define URL_COIN_GECKO "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
 
 // Library declaration
 

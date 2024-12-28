@@ -2,6 +2,7 @@
 
 # This script rename the Standalone and Library names in the template 
 # (c) Tomáš Mark 2024
+export TemplateRenamerVersion="0.0.1"
 
 # Check if four arguments are provided
 if [ "$#" -ne 4 ]; then

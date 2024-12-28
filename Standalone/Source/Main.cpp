@@ -3,12 +3,12 @@
 
 #include <chrono>
 #include <iostream>
-#include <memory>
+// #include <memory>
 #include <thread>
 
 // Standalone main entry point
 
-auto main(int argc, char *argv[], char *env[]) -> int
+int main()
 {
     // init MyDiscordBot instance
     std::unique_ptr<MyDiscordBot> Lib = std::make_unique<MyDiscordBot>();

@@ -21,37 +21,31 @@ if(USE_SANITIZER OR USE_STATIC_ANALYZER)
         if("clang-tidy" IN_LIST USE_STATIC_ANALYZER)
             set(CLANG_TIDY
                 ON
-                CACHE INTERNAL ""
-            )
+                CACHE INTERNAL "")
         else()
             set(CLANG_TIDY
                 OFF
-                CACHE INTERNAL ""
-            )
+                CACHE INTERNAL "")
         endif()
 
         if("iwyu" IN_LIST USE_STATIC_ANALYZER)
             set(IWYU
                 ON
-                CACHE INTERNAL ""
-            )
+                CACHE INTERNAL "")
         else()
             set(IWYU
                 OFF
-                CACHE INTERNAL ""
-            )
+                CACHE INTERNAL "")
         endif()
 
         if("cppcheck" IN_LIST USE_STATIC_ANALYZER)
             set(CPPCHECK
                 ON
-                CACHE INTERNAL ""
-            )
+                CACHE INTERNAL "")
         else()
             set(CPPCHECK
                 OFF
-                CACHE INTERNAL ""
-            )
+                CACHE INTERNAL "")
         endif()
 
         include(${cmake-scripts_SOURCE_DIR}/tools.cmake)

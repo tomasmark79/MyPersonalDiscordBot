@@ -1,9 +1,10 @@
+/cpm_modules
 /Build*
 /build*
 /CMakeFiles*
-/CMakeCache.txt
-*/cpm_modules
-*/.DS_Store
+/ReleaseArtefacts*
+CMakeCache.txt
 CMakeUserPresets.json
-
+Settings.json
+SolutionController.log
 

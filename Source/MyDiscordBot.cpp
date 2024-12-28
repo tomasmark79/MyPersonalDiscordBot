@@ -1,6 +1,6 @@
 #include "MyDiscordBot/MyDiscordBot.hpp"
 
-#include <EmojiToolsLib/EmojiToolsLib.hpp>
+#include <EmojiTools/EmojiTools.hpp>
 #include <iostream>
 #include <mydiscordbot/version.h>
 
@@ -11,21 +11,18 @@
 
 MyDiscordBot::MyDiscordBot()
 {
-    std::cout << "--- MyDiscordBot v." << MYDISCORDBOT_VERSION
-              << " instantiated ---" << std::endl;
+    std::cout << "--- MyDiscordBot v." << MYDISCORDBOT_VERSION << " instantiated ---" << std::endl;
 
-    EmojiToolsLib /*💋*/ emojiTools;
-    std::string          emoji;
+    EmojiTools /*💋*/ emojiTools;
+    std::string       emoji;
 
-    std::cout << "-- MyDiscordBot Library Linked --" << " "
-              << emojiTools.getRandomEmoji(emoji) << std::endl;
-
+    std::cout << "-- MyDiscordBot Library Linked --" << " " << emojiTools.getRandomEmoji(emoji)
+              << std::endl;
 
     std::cout << "--- " << curl_version() << " linked ---" << std::endl;
     std::cout << "--- " << BZ2_bzlibVersion() << " linked ---" << std::endl;
 
     initCluster();
-
 }
 
 MyDiscordBot::~MyDiscordBot()
@@ -48,8 +45,7 @@ void MyDiscordBot::slashCommands(std::unique_ptr<dpp::cluster> &bot)
     bot->on_slashcommand(
         [&](const dpp::slashcommand_t &event)
         {
-            std::cout << typeid(event).name()
-                      << std::endl; // is showing type of event
+            std::cout << typeid(event).name() << std::endl; // is showing type of event
 
             if (event.command.get_command_name() == "ping")
             {
@@ -60,7 +56,7 @@ void MyDiscordBot::slashCommands(std::unique_ptr<dpp::cluster> &bot)
             {
                 event.reply("Ping! 🏓");
             }
-            
+
             if (event.command.get_command_name() == "gang")
             {
                 dpp::message msg(event.command.channel_id, "Bang bang! 💥💥");
@@ -80,41 +76,34 @@ void MyDiscordBot::slashCommands(std::unique_ptr<dpp::cluster> &bot)
                 {
                     curl_easy_setopt(curl, CURLOPT_URL, URL_EXCHANGE_RATES_CZ);
 
-                    curl_easy_setopt(
-                        curl, CURLOPT_WRITEFUNCTION, WriteCallback
-                    );
+                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &rawTxtBuffer);
 
                     res = curl_easy_perform(curl);
 
                     if (res != CURLE_OK)
                     {
-                        std::cerr << "curl_easy_perform() failed: "
-                                  << curl_easy_strerror(res) << std::endl;
+                        std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res)
+                                  << std::endl;
                     }
                     else
                     {
 
                         // replace char "|" with "\t"
-                        std::replace(
-                            rawTxtBuffer.begin(), rawTxtBuffer.end(), '|', '\t'
-                        );
+                        std::replace(rawTxtBuffer.begin(), rawTxtBuffer.end(), '|', '\t');
 
-                        std::cout << "Downloaded content:\n"
-                                  << rawTxtBuffer << std::endl;
+                        std::cout << "Downloaded content:\n" << rawTxtBuffer << std::endl;
 
-                        dpp::message msg(
-                            event.command.channel_id, rawTxtBuffer
-                        );
+                        dpp::message msg(event.command.channel_id, rawTxtBuffer);
                         bot->message_create(msg);
                     }
                     curl_easy_cleanup(curl);
                 }
             }
 
-            // TODO on Raspberry Pi 5 i am getting 
+            // TODO on Raspberry Pi 5 i am getting
             // curl_easy_perform() failed: SSL peer certificate or SSH remote key was not OK
-            
+
             if (event.command.get_command_name() == "crypto")
             {
                 event.reply("Getting latest crypto exchange rates!");
@@ -127,17 +116,15 @@ void MyDiscordBot::slashCommands(std::unique_ptr<dpp::cluster> &bot)
                 {
                     curl_easy_setopt(curl, CURLOPT_URL, URL_COIN_GECKO);
 
-                    curl_easy_setopt(
-                        curl, CURLOPT_WRITEFUNCTION, WriteCallback
-                    );
+                    curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
                     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &rawTxtBuffer);
 
                     res = curl_easy_perform(curl);
 
                     if (res != CURLE_OK)
                     {
-                        std::cerr << "curl_easy_perform() failed: "
-                                  << curl_easy_strerror(res) << std::endl;
+                        std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res)
+                                  << std::endl;
                     }
                     else
                     {
@@ -154,8 +141,7 @@ void MyDiscordBot::slashCommands(std::unique_ptr<dpp::cluster> &bot)
                         nlohmann::json j = nlohmann::json::parse(rawTxtBuffer);
                         std::string    usd = j["bitcoin"]["usd"].dump();
 
-                        std::cout << "Downloaded content:\n"
-                                  << rawTxtBuffer << std::endl;
+                        std::cout << "Downloaded content:\n" << rawTxtBuffer << std::endl;
 
                         std::string message = "1 BTC = " + usd + " USD";
 
@@ -185,14 +171,12 @@ void MyDiscordBot::onReady(std::unique_ptr<dpp::cluster> &bot)
             if (dpp::run_once<struct register_bot_commands>())
             {
                 /* pm */
-                dpp::slashcommand command(
-                    "pm", "Send a private message.", bot->me.id
-                );
+                dpp::slashcommand command("pm", "Send a private message.", bot->me.id);
 
                 /* add options */
-                command.add_option(dpp::command_option(
-                    dpp::co_mentionable, "user", "The user to message", false
-                ));
+                command.add_option(
+                    dpp::command_option(dpp::co_mentionable, "user", "The user to message", false)
+                );
                 bot->global_command_create(command);
 
                 /* getbotinfo */
@@ -201,35 +185,27 @@ void MyDiscordBot::onReady(std::unique_ptr<dpp::cluster> &bot)
                 );
 
                 /* ping */
-                bot->global_command_create(
-                    dpp::slashcommand("ping", "Ping pong!", bot->me.id)
-                );
+                bot->global_command_create(dpp::slashcommand("ping", "Ping pong!", bot->me.id));
 
                 /* pong */
-                bot->global_command_create(
-                    dpp::slashcommand("pong", "Pong ping!", bot->me.id)
-                );
+                bot->global_command_create(dpp::slashcommand("pong", "Pong ping!", bot->me.id));
 
                 /* gang */
-                bot->global_command_create(
-                    dpp::slashcommand("gang", "Will shoot!", bot->me.id)
-                );
+                bot->global_command_create(dpp::slashcommand("gang", "Will shoot!", bot->me.id));
 
                 /* exchange */
-                bot->global_command_create(dpp::slashcommand(
-                    "exchange", "Get latest exchange rates!", bot->me.id
-                ));
+                bot->global_command_create(
+                    dpp::slashcommand("exchange", "Get latest exchange rates!", bot->me.id)
+                );
 
                 /* crypto */
-                bot->global_command_create(dpp::slashcommand(
-                    "crypto", "Get latest crypto exchange rates!", bot->me.id
-                ));
+                bot->global_command_create(
+                    dpp::slashcommand("crypto", "Get latest crypto exchange rates!", bot->me.id)
+                );
 
                 /* emoji */
                 bot->global_command_create(dpp::slashcommand(
-                    "emoji",
-                    "Show random emoji character to the chat!",
-                    bot->me.id
+                    "emoji", "Show random emoji character to the chat!", bot->me.id
                 ));
 
                 /* fewemojies */
@@ -241,9 +217,9 @@ void MyDiscordBot::onReady(std::unique_ptr<dpp::cluster> &bot)
                 ));
 
                 /* noemoji */
-                bot->global_command_create(dpp::slashcommand(
-                    "noemoji", "Stop to all incomming emojies!", bot->me.id
-                ));
+                bot->global_command_create(
+                    dpp::slashcommand("noemoji", "Stop to all incomming emojies!", bot->me.id)
+                );
 
                 std::cout << "Commands registered!" << std::endl;
             }
@@ -279,8 +255,7 @@ bool MyDiscordBot::getToken(std::string &token)
     std::ifstream file(OAUTH_TOKEN_FILE);
     if (!file.is_open())
     {
-        std::cerr << "Error: Could not open file " << OAUTH_TOKEN_FILE
-                  << std::endl;
+        std::cerr << "Error: Could not open file " << OAUTH_TOKEN_FILE << std::endl;
         return false;
     }
 
