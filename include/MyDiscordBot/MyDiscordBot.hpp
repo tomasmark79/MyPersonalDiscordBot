@@ -7,7 +7,10 @@
 #include <memory>
 #include <string>
 
-#define OAUTH_TOKEN_FILE   "/home/tomas/.discord_oauth.key"
+#include "GitHubApiWrapper/GitHubApiWrapper.hpp"
+
+#define DISCORD_OAUTH_TOKEN_FILE "/home/tomas/.discord_oauth.key"
+
 #define EMOJI_INTERVAL_SEC (int)600
 #define URL_EXCHANGE_RATES_CZ                                                                      \
     "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/"                      \
@@ -24,10 +27,11 @@ class MyDiscordBot
     ~MyDiscordBot();
 
   protected:
-    std::unique_ptr<dpp::cluster> bot;
+    std::unique_ptr<dpp::cluster>     bot;
+    std::unique_ptr<GitHubApiWrapper> gitHub;
 
   private:
-    bool getToken(std::string &token);
+    bool getToken(std::string &token, const std::string &filePath);
     bool initCluster();
     void onReady(std::unique_ptr<dpp::cluster> &bot);
     void slashCommands(std::unique_ptr<dpp::cluster> &bot);

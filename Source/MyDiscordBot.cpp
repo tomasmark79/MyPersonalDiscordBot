@@ -7,6 +7,9 @@
 #include "bzlib.h"
 #include <curl/curl.h>
 
+#include <chrono>
+#include <thread>
+
 // Library implementation
 
 MyDiscordBot::MyDiscordBot()
@@ -21,6 +24,8 @@ MyDiscordBot::MyDiscordBot()
 
     std::cout << "--- " << curl_version() << " linked ---" << std::endl;
     std::cout << "--- " << BZ2_bzlibVersion() << " linked ---" << std::endl;
+
+    gitHub = std::make_unique<GitHubApiWrapper>();
 
     initCluster();
 }
@@ -62,6 +67,22 @@ void MyDiscordBot::slashCommands(std::unique_ptr<dpp::cluster> &bot)
                 dpp::message msg(event.command.channel_id, "Bang bang! 💥💥");
                 event.reply(msg);
                 bot->message_create(msg);
+            }
+
+            if (event.command.get_command_name() == "github")
+            {
+                event.reply("GitBub Information! 🐙");
+                std::vector<std::string> commitsV;
+                gitHub->fetchLastXCommits(3, commitsV);
+
+                for (const auto &commit : commitsV)
+                {
+                    dpp::message msg(event.command.channel_id, commit);
+                    bot->message_create(msg);
+                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                }
+
+                return;
             }
 
             if (event.command.get_command_name() == "exchange")
@@ -184,6 +205,11 @@ void MyDiscordBot::onReady(std::unique_ptr<dpp::cluster> &bot)
                     dpp::slashcommand("bot", "Get bot information!", bot->me.id)
                 );
 
+                /* githubinfo */
+                bot->global_command_create(
+                    dpp::slashcommand("github", "Get GitHub information!", bot->me.id)
+                );
+
                 /* ping */
                 bot->global_command_create(dpp::slashcommand("ping", "Ping pong!", bot->me.id));
 
@@ -236,7 +262,7 @@ bool MyDiscordBot::initCluster()
     }
 
     std::string token;
-    if (getToken(token))
+    if (getToken(token, DISCORD_OAUTH_TOKEN_FILE))
     {
         /* smart pointer */
         bot = std::make_unique<dpp::cluster>(token);
@@ -250,12 +276,12 @@ bool MyDiscordBot::initCluster()
     return true;
 }
 
-bool MyDiscordBot::getToken(std::string &token)
+bool MyDiscordBot::getToken(std::string &token, const std::string &filePath)
 {
-    std::ifstream file(OAUTH_TOKEN_FILE);
+    std::ifstream file(filePath);
     if (!file.is_open())
     {
-        std::cerr << "Error: Could not open file " << OAUTH_TOKEN_FILE << std::endl;
+        std::cerr << "Error: Could not open file " << filePath << std::endl;
         return false;
     }
 

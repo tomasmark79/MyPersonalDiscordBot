@@ -33,11 +33,15 @@ CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.12.0")
 CPMAddPackage("gh:cpm-cmake/CPMLicenses.cmake@0.0.7")
 
 # ---- Optional CPMs  ----
-# CPMAddPackage("gh:nlohmann/json@3.11.3")
+#CPMAddPackage("gh:nlohmann/json@3.11.3")
 CPMAddPackage("gh:tomasmark79/EmojiTools#main")
 
+# ---- Local CPMs  ----
+CPMAddPackage(NAME GitHubApiWrapper SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../MyGitHubMonitor)
+
+
 # put CPM.license target after all packages have been added
-cpm_licenses_create_disclaimer_target(write-licenses "${CMAKE_CURRENT_BINARY_DIR}/third_party.txt"
+cpm_licenses_create_disclaimer_target(write-licenses-discord-bot "${CMAKE_CURRENT_BINARY_DIR}/third_party.txt"
                                       "${CPM_PACKAGES}")
 
 # ---- CMake modules path ----
@@ -46,11 +50,11 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules")
 # ---- System Libraries example ----
 find_package(Threads REQUIRED)
 # find_package(X11 REQUIRED)
-
 # ---- Conan dependencies example ----
+
+find_package(dpp CONFIG REQUIRED)
 find_package(BZip2 REQUIRED)
 find_package(CURL REQUIRED)
-find_package(dpp CONFIG REQUIRED)
 
 # Glob not recommended, but the simplest way for this template
 file(
@@ -84,9 +88,11 @@ target_include_directories(
     ${PROJECT_LIBRARY_NAME}
     PUBLIC $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
            $<INSTALL_INTERFACE:include/${PROJECT_LIBRARY_NAME}-${PROJECT_VERSION}>
-    PRIVATE ${PROJECT_SOURCE_DIR}/Source # for headers in Source folder
+    # PRIVATE ${PROJECT_SOURCE_DIR}/Source # for headers in Source folder
     # PRIVATE ${nlohmann_json_SOURCE_DIR}/include # by CPM.cmake for nlohmann/json.hpp
 )
+
+
 
 # being a cross-platform target, we enforce standards conformance on MSVC
 target_compile_options(
@@ -96,7 +102,14 @@ target_compile_options(
 
 # ---- Link libraries ----
 target_link_libraries(
-    ${PROJECT_LIBRARY_NAME} PUBLIC Threads::Threads dsdotname::EmojiTools BZip2::BZip2 CURL::libcurl dpp::dpp
+    ${PROJECT_LIBRARY_NAME} PUBLIC 
+    Threads::Threads
+    dsdotname::GitHubApiWrapper
+    dsdotname::EmojiTools
+    BZip2::BZip2
+    CURL::libcurl
+    dpp::dpp
+    nlohmann_json::nlohmann_json
     # Conan dependencies example 
 )
 
@@ -117,7 +130,7 @@ packageProject(
     # (optional) option to install only header files with matching pattern
     INCLUDE_HEADER_PATTERN "*.h"
     # semicolon separated list of the project's dependencies
-    DEPENDENCIES "fmt#11.0.2;CPMLicenses.cmake@0.0.7;json@3.11.3;EmojiTools@0.0.1"
+    DEPENDENCIES "fmt#11.0.2;CPMLicenses.cmake@0.0.7;EmojiTools@0.0.1"
     # (optional) create a header containing the version info Note: that the path to headers should
     # be lowercase
     VERSION_HEADER "${PROJECT_LIBRARY_NAME_LOWER}/version.h"
