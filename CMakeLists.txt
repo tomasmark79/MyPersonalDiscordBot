@@ -45,6 +45,7 @@ include(cmake/tools.cmake)
 include(cmake/CPM.cmake)
 CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.12.0")
 CPMAddPackage("gh:cpm-cmake/CPMLicenses.cmake@0.0.7")
+CPMAddPackage("gh:tomasmark79/EmojiTools#main")
 cpm_licenses_create_disclaimer_target(
     write-licenses-${LIBRARY_NAME} "${CMAKE_CURRENT_BINARY_DIR}/third_party.txt" "${CPM_PACKAGES}")
 
@@ -101,18 +102,19 @@ target_compile_options(
 # ==============================================================================
 # Set compile features
 # ==============================================================================
-target_compile_features(${LIBRARY_NAME} PUBLIC cxx_std_14)
+target_compile_features(${LIBRARY_NAME} PUBLIC cxx_std_17)
 
 # ==============================================================================
 # Set linking
 # ==============================================================================
 target_link_libraries(
     ${LIBRARY_NAME}
+    PRIVATE dsdotname::EmojiTools
     PRIVATE ZLIB::ZLIB
     PRIVATE fmt::fmt
     PRIVATE nlohmann_json::nlohmann_json
     PRIVATE CURL::libcurl
-    PRIVATE dpp::dpp)
+    PUBLIC dpp::dpp)
 
 # ==============================================================================
 # set packageProject arttributes
@@ -125,7 +127,7 @@ packageProject(
     INCLUDE_DESTINATION include/${LIBRARY_NAME_LOWER}-${PROJECT_VERSION}
     INCLUDE_HEADER_PATTERN "*.h;*.hpp;*.hh;*.hxx"
     DEPENDENCIES
-        "fmt#11.0.2;CPMLicenses.cmake@0.0.7;zlib#1.2.11;nlohmann_json#3.11.2;curl#8.10.1;dpp#10.0.35"
+        "fmt#11.0.2;CPMLicenses.cmake@0.0.7;zlib#1.2.11;nlohmann_json#3.11.2;curl#8.10.1;EmojiTools#main;dpp#10.0.35"
     VERSION_HEADER "${LIBRARY_NAME_LOWER}/version.h"
     EXPORT_HEADER "${LIBRARY_NAME_LOWER}/export.h"
     NAMESPACE ${LIBRARY_NAMESPACE}
