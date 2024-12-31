@@ -3,7 +3,7 @@
     "version": "2.0.0",
     "inputs": [
         {
-            /* MARKWARE SPECIAL INPUT ITEMS */
+            /* SPECIAL MENU ITEMS */
             "id": "specialTaskName",
             "type": "pickString",
             "description": "Select MarkWare Special Task",
@@ -11,10 +11,9 @@
                 "Permutate All Tasks 🕧"
             ],
             "default": "Permutate All Tasks 🕧"
-
         },
         {
-            /* MARKWARE INPUT ITEMS */
+            /* MENU ITEMS */
             "id": "taskName",
             "type": "pickString",
             "description": "Select MarkWare Task",
@@ -46,6 +45,7 @@
                 "🎯 Install Artefacts 📌",
                 "🎯 Release Artefacts 📦",
                 "",
+                "⚔️ Conan graph.html",
                 "🔍 Lint C/C++ files",
                 "📐 Format C/C++ files (Clang)",
                 "📏 Format CMake files"
@@ -53,20 +53,20 @@
             "default": "Build 🔨"
         },
         {
-            /* BUILD ARCH INPUT ITEMS */
+            /* ARCH ITEMS */
             "id": "buildArch",
             "type": "pickString",
             "description": "Select target architecture",
             "options": [
-                "x86_64-linux-gnu",
+                "default", /* this is system default compiler */
                 "x86_64-unknown-linux-gnu",
-                "aarch64-linux-gnu",
-                "x86_64-w64-mingw32"
+                "x86_64-w64-mingw32",
+                "aarch64-linux-gnu"
             ],
-            "default": "x86_64-linux-gnu" /* change regarding you are sitting */
+            "default": "default"
         },
         {
-            /* BUILD TYPE INPUT ITEMS */
+            /* BUILD TYPE ITEMS */
             "id": "buildType",
             "type": "pickString",
             "description": "Select type of build",
@@ -81,14 +81,14 @@
     ],
     "tasks": [
         {
-            /* MARKWARE SPECIAL TASKS MENU */
+            /* SPECIAL TASKS RUN */
             "label": "MarkWare Special Tasks Menu",
             "type": "shell",
-            "command": "${workspaceFolder}/SolutionController.sh",
+            "command": "python3",
             "args": [
+                "${workspaceFolder}/SolutionController.py",
                 "${input:specialTaskName}",
-                "SPECIALTASK"
-
+                "independent_parameter"
             ],
             "group": {
                 "kind": "build",
@@ -101,11 +101,12 @@
             ]
         },
         {
-            /* MARKWARE TASKS MENU */
+             /* TASKS RUN */
             "label": "MarkWare Tasks Menu",
             "type": "shell",
-            "command": "${workspaceFolder}/SolutionController.sh",
+            "command": "python3",
             "args": [
+                "${workspaceFolder}/SolutionController.py",
                 "${input:taskName}",
                 "${input:buildArch}",
                 "${input:buildType}"
@@ -124,10 +125,11 @@
             /* DIRECT BUILD (NO MENU) */
             "label": "Direct Build",
             "type": "shell",
-            "command": "${workspaceFolder}/SolutionController.sh",
+            "command": "python3",
             "args": [
+                "${workspaceFolder}/SolutionController.py",
                 "Build 🔨",
-                "x86_64-linux-gnu",
+                "default",
                 "Debug"
             ],
             "group": {
@@ -138,11 +140,12 @@
             "problemMatcher": []
         },
         {
-            /* SHORTCUTTED LINT C/C++  */
+            /* DIRECT LINT C/C++ ( SHORT MENU )  */
             "label": "lintC",
             "type": "shell",
-            "command": "${workspaceFolder}/SolutionController.sh",
+            "command": "python3",
             "args": [
+                "${workspaceFolder}/SolutionController.py",
                 "🔍 Lint C/C++ files",
                 "${input:buildArch}",
                 "${input:buildType}"
@@ -155,13 +158,15 @@
             "problemMatcher": []
         },
         {
-            /* DIRECT CLANG-FORMAT (NO MENU) */
+            /* DIRECT CLANG-FORMAT ( SHORT MENU ) */
             "label": "clang-format",
             "type": "shell",
-            "command": "${workspaceFolder}/SolutionController.sh",
+            "command": "python3",
             "args": [
+                "${workspaceFolder}/SolutionController.py",
                 "📐 Format C/C++ files (Clang)",
-                "SPECIALTASK"
+                "${input:buildArch}",
+                "${input:buildType}"
             ],
             "group": {
                 "kind": "build",
@@ -171,13 +176,15 @@
             "problemMatcher": []
         },
         {
-            /* DIRECT CMAKE-FORMAT (NO MENU) */
+            /* DIRECT CMAKE-FORMAT ( SHORT MENU ) */
             "label": "cmake-format",
             "type": "shell",
-            "command": "${workspaceFolder}/SolutionController.sh",
+            "command": "python3",
             "args": [
+                "${workspaceFolder}/SolutionController.py",
                 "📏 Format CMake files",
-                "SPECIALTASK"
+                "${input:buildArch}",
+                "${input:buildType}"
             ],
             "group": {
                 "kind": "build",
@@ -185,25 +192,6 @@
             },
             "detail": "cmake-format",
             "problemMatcher": []
-        },
-        {
-            /* SPELLCHECK BASH SCRIPTS recursive /* ctrl + shift + atl + B  */
-            "label": "shellcheck project bash scripts",
-            "type": "shell",
-            "command": "shellcheck",
-            "args": [
-                "${workspaceFolder}/SolutionController.sh",
-                "${workspaceFolder}/SolutionRenamer.sh"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            },
-            "detail": "shellcheck project bash scripts",
-            "problemMatcher": [],
-            "dependsOn": [
-                "clear terminal"
-            ]
         },
         { /* clear terminal */
             "label": "clear terminal",

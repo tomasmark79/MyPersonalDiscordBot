@@ -1,10 +1,4 @@
-/cpm_modules
 /Build*
-/build*
-/CMakeFiles*
-/ReleaseArtefacts*
-CMakeCache.txt
 CMakeUserPresets.json
-Settings.json
 SolutionController.log
 
