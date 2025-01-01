@@ -2,42 +2,55 @@
 #define __MYDISCORDBOT_H__
 
 #include <dpp/dpp.h>
-#include <fstream>
 #include <iostream>
 #include <memory>
+#include <random>
 #include <string>
-
-#include <EmojiTools/EmojiTools.hpp>
-#include "MyGitHubApi/MyGitHubApi.hpp"
-
-#define DISCORD_OAUTH_TOKEN_FILE "/home/tomas/.discord_oauth.key"
-
-#define EMOJI_INTERVAL_SEC (int)10
-#define URL_EXCHANGE_RATES_CZ                                                                      \
-    "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/"                      \
-    "kurzy-devizoveho-trhu/denni_kurz.txt"
-
-#define URL_COIN_GECKO "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
-
-// Library declaration
 
 class MyDiscordBot
 {
   public:
+    bool loadVariousBotCommands();
+
+    bool startRegularlyRefreshMessage();
+    bool startRegularlyBitcoinPriceMessage();
+    bool startRegularlyCzechExchangeRateMessage();
+    bool startRegularlyGithubInfoMessage();
+
+    bool welcome();
+    bool initCluster();
+    bool getToken(std::string &token, const std::string &filePath);
+
+    std::string getLinuxFortuneCpp();
+    std::string getLinuxNeofetchCpp();
+    std::string getBitcoinPrice();
+    std::string getCzechExchangeRate();
+    std::string getGithubInfo();
+
+    int getRandom(int min, int max)
+    {
+        std::random_device              rd;
+        std::mt19937                    gen(rd());
+        std::uniform_int_distribution<> dis(min, max);
+        int                             random = dis(gen);
+        return random;
+    }
+
+    std::string getCurrentTime()
+    {
+        time_t    now = time(0);
+        struct tm tstruct;
+        char      buf[80];
+        tstruct = *localtime(&now);
+        strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
+        return buf;
+    }
+
     MyDiscordBot();
     ~MyDiscordBot();
 
-  protected:
-    std::unique_ptr<dpp::cluster> bot;
-    std::unique_ptr<MyGitHubApi>  gitHub;
-    EmojiTools /*💋*/ emojiTools;
-    std::string       emoji;
+    // TODO - ziskavat zajimave predpovedi, napr. pocasi
 
-  private:
-    bool getToken(std::string &token, const std::string &filePath);
-    bool initCluster();
-    void onReady(std::unique_ptr<dpp::cluster> &bot);
-    void slashCommands(std::unique_ptr<dpp::cluster> &bot);
 };
 
 #endif // __MYDISCORDBOT_H__

@@ -20,7 +20,8 @@
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }
-            ]
+            ],
+            "preLaunchTask": "Direct Build"
         },
         {
             "name": "Debug RelWithDebInfo Standalone Target",
