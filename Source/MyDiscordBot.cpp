@@ -1,6 +1,5 @@
 #include "MyDiscordBot/MyDiscordBot.hpp"
 
-#include <EmojiTools/EmojiTools.hpp>
 #include <iostream>
 #include <mydiscordbot/version.h>
 
@@ -15,9 +14,7 @@ MyDiscordBot::MyDiscordBot()
 {
     std::cout << "--- MyDiscordBot v." << MYDISCORDBOT_VERSION << " instantiated ---" << std::endl;
 
-    EmojiTools /*💋*/ emojiTools;
-    std::string       emoji;
-
+    
     std::cout << "-- MyDiscordBot Library Linked --" << " " << emojiTools.getRandomEmoji(emoji)
               << std::endl;
 
@@ -49,6 +46,13 @@ void MyDiscordBot::slashCommands(std::unique_ptr<dpp::cluster> &bot)
         [&](const dpp::slashcommand_t &event)
         {
             std::cout << typeid(event).name() << std::endl; // is showing type of event
+
+            if (event.command.get_command_name() == "emoji")
+            {
+                emojiTools.getRandomEmoji(this->emoji);
+                event.reply(emoji);
+            }
+
 
             if (event.command.get_command_name() == "ping")
             {
@@ -227,7 +231,7 @@ void MyDiscordBot::onReady(std::unique_ptr<dpp::cluster> &bot)
 
                 /* emoji */
                 bot->global_command_create(dpp::slashcommand(
-                    "emoji", "Show random emoji character to the chat!", bot->me.id
+                    "emoji", "Ask to get a random emoji character !", bot->me.id
                 ));
 
                 /* fewemojies */

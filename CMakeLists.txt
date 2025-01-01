@@ -112,7 +112,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # ==============================================================================
 target_link_libraries(
     ${LIBRARY_NAME}
-    PRIVATE dsdotname::EmojiTools
+    PUBLIC dsdotname::EmojiTools
     PUBLIC dsdotname::MyGitHubApi
     PRIVATE ZLIB::ZLIB
     PRIVATE fmt::fmt

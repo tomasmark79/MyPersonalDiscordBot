@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include <EmojiTools/EmojiTools.hpp>
 #include "MyGitHubApi/MyGitHubApi.hpp"
 
 #define DISCORD_OAUTH_TOKEN_FILE "/home/tomas/.discord_oauth.key"
@@ -29,6 +30,8 @@ class MyDiscordBot
   protected:
     std::unique_ptr<dpp::cluster> bot;
     std::unique_ptr<MyGitHubApi>  gitHub;
+    EmojiTools /*💋*/ emojiTools;
+    std::string       emoji;
 
   private:
     bool getToken(std::string &token, const std::string &filePath);
