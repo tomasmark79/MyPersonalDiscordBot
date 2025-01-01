@@ -8,13 +8,12 @@
 #include <chrono>
 #include <thread>
 
-// Library implementation
+std::atomic<bool> stopTimerThread(false);
 
 MyDiscordBot::MyDiscordBot()
 {
     std::cout << "--- MyDiscordBot v." << MYDISCORDBOT_VERSION << " instantiated ---" << std::endl;
 
-    
     std::cout << "-- MyDiscordBot Library Linked --" << " " << emojiTools.getRandomEmoji(emoji)
               << std::endl;
 
@@ -53,6 +52,41 @@ void MyDiscordBot::slashCommands(std::unique_ptr<dpp::cluster> &bot)
                 event.reply(emoji);
             }
 
+            if (event.command.get_command_name() == "emojies")
+            {
+                emojiTools.getRandomEmoji(this->emoji);
+                event.reply(this->emoji);
+
+                auto kanal = event.command.channel_id;
+
+                stopTimerThread.store(false);
+                std::thread threadTimer(
+                    [&bot, &event, this, &kanal]
+                    () -> void
+                    {
+                        while (!stopTimerThread.load())
+                        {
+                            std::cout << "Emoji to print: " << emoji << std::endl;
+
+                            emojiTools.getRandomEmoji(emoji);
+
+                            dpp::message msg(kanal, emoji);
+                            bot->message_create(msg);
+
+                            std::this_thread::sleep_for(std::chrono::seconds(EMOJI_INTERVAL_SEC));
+                        }
+                    }
+                );
+
+                threadTimer.detach();
+            }
+
+            if (event.command.get_command_name() == "noemoji")
+            {
+                stopTimerThread.store(true);
+                emojiTools.getRandomEmoji(this->emoji);
+                event.reply(emoji);
+            }
 
             if (event.command.get_command_name() == "ping")
             {
@@ -230,13 +264,13 @@ void MyDiscordBot::onReady(std::unique_ptr<dpp::cluster> &bot)
                 );
 
                 /* emoji */
-                bot->global_command_create(dpp::slashcommand(
-                    "emoji", "Ask to get a random emoji character !", bot->me.id
-                ));
+                bot->global_command_create(
+                    dpp::slashcommand("emoji", "Ask to get a random emoji character !", bot->me.id)
+                );
 
                 /* fewemojies */
                 bot->global_command_create(dpp::slashcommand(
-                    "fewemojies",
+                    "emojies",
                     "Show random number of random emoji characters in "
                     "interval!",
                     bot->me.id
