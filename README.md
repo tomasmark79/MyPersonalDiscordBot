@@ -1,7 +1,7 @@
 # My Personal Discord Bot
 
 Author: **Tomáš Mark**  
-Version: **0.0.1**
+Version: **main**
 
 [![Ubuntu](https://github.com/tomasmark79/MyPersonalDiscordBot/actions/workflows/ubuntu.yml/badge.svg)](https://github.com/tomasmark79/MyPersonalDiscordBot/actions/workflows/ubuntu.yml)
 [![MacOS](https://github.com/tomasmark79/MyPersonalDiscordBot/actions/workflows/macos.yml/badge.svg)](https://github.com/tomasmark79/MyPersonalDiscordBot/actions/workflows/macos.yml)
