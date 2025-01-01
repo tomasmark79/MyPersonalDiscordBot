@@ -84,7 +84,8 @@ def conan_install(bdir):
     shared_flag = "-o *:shared=True" if 'option(BUILD_SHARED_LIBS "Build using shared libraries" ON)' in cmake_content else "-o *:shared=False"
     profile = "default" if not isCrossCompilation else buildArch
     # --settings=compiler.cppstd=17
-    cmd = f'conan install "{workSpaceDir}" --output-folder="{bdir}" -vvv --build=missing --profile={profile} --settings=build_type={buildType} {shared_flag}'
+    # -vvv
+    cmd = f'conan install "{workSpaceDir}" --output-folder="{bdir}" --build=missing --profile={profile} --settings=build_type={buildType} {shared_flag}'
     execute_command(cmd)
 
 def cmake_configure(src, bdir):
