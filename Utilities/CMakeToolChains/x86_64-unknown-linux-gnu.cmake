@@ -1,7 +1,7 @@
 # (c) Tomáš Mark 2024
 
 set(CMAKE_SYSTEM_NAME Linux)
-set(CMAKE_SYSTEM_PROCESSOR aarch64)
+set(CMAKE_SYSTEM_PROCESSOR x86_64)
 set(user_dir "/home/tomas") # edit me
 set(triple "x86_64-unknown-linux-gnu")
 
