@@ -8,11 +8,19 @@
 
 #include <array>
 #include <chrono>
-#include <cstdio>
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
 #include <thread>
+
+#ifdef _WIN32
+#include <cstdio>
+#define popen _popen
+#define pclose _pclose
+#else
+#include <cstdio>
+#endif
+
 
 #define EMOJI_INTERVAL_SEC       (int)10
 #define DISCORD_OAUTH_TOKEN_FILE "/home/tomas/.discord_oauth.key"
@@ -298,7 +306,7 @@ std::string MyDiscordBot::getLinuxFortuneCpp()
 
 std::string MyDiscordBot::getLinuxNeofetchCpp()
 {
-    constexpr size_t  bufferSize = 2048;
+    constexpr size_t  bufferSize = 2000;
     std::stringstream result;
 
     // Create unique_ptr with custom deleter for RAII
