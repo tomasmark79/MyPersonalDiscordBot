@@ -7,7 +7,7 @@
 #include <memory>
 #include <string>
 
-//#include "GitHubApiWrapper/GitHubApiWrapper.hpp"
+#include "MyGitHubApi/MyGitHubApi.hpp"
 
 #define DISCORD_OAUTH_TOKEN_FILE "/home/tomas/.discord_oauth.key"
 
@@ -27,8 +27,8 @@ class MyDiscordBot
     ~MyDiscordBot();
 
   protected:
-    std::unique_ptr<dpp::cluster>     bot;
-    // std::unique_ptr<GitHubApiWrapper> gitHub;
+    std::unique_ptr<dpp::cluster> bot;
+    std::unique_ptr<MyGitHubApi>  gitHub;
 
   private:
     bool getToken(std::string &token, const std::string &filePath);

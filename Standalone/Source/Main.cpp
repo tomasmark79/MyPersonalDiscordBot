@@ -2,9 +2,9 @@
 #include <MyDiscordBot/MyDiscordBot.hpp>
 #include <mydiscordbot/version.h>
 
-#include <memory>
 #include <chrono>
 #include <iostream>
+#include <memory>
 #include <thread>
 
 int main()

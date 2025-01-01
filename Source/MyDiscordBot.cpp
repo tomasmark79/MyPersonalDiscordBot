@@ -23,8 +23,7 @@ MyDiscordBot::MyDiscordBot()
 
     std::cout << "--- " << curl_version() << " linked ---" << std::endl;
 
-
-    // gitHub = std::make_unique<GitHubApiWrapper>();
+    gitHub = std::make_unique<MyGitHubApi>();
 
     initCluster();
 }
@@ -71,15 +70,15 @@ void MyDiscordBot::slashCommands(std::unique_ptr<dpp::cluster> &bot)
             if (event.command.get_command_name() == "github")
             {
                 event.reply("GitBub Information! 🐙");
-                // std::vector<std::string> commitsV;
-                // gitHub->fetchLastXCommits(3, commitsV);
+                std::vector<std::string> commitsV;
+                gitHub->fetchLastXCommits(3, commitsV);
 
-                // for (const auto &commit : commitsV)
-                // {
-                //     dpp::message msg(event.command.channel_id, commit);
-                //     bot->message_create(msg);
-                //     std::this_thread::sleep_for(std::chrono::seconds(2));
-                // }
+                for (const auto &commit : commitsV)
+                {
+                    dpp::message msg(event.command.channel_id, commit);
+                    bot->message_create(msg);
+                    std::this_thread::sleep_for(std::chrono::seconds(2));
+                }
             }
 
             if (event.command.get_command_name() == "exchange")
