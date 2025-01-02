@@ -12,9 +12,3 @@ class CompressorRecipe(ConanFile):
         self.requires("nlohmann_json/3.11.2")
         self.requires("libcurl/8.10.1")
         self.requires("dpp/10.0.35")
-    
-    #def build_requirements(self):
-        #self.tool_requires("cmake/3.30.5")
-
-    #def layout(self):
-        #cmake_layout(self)
