@@ -22,7 +22,6 @@ buildArch = sys.argv[2] if len(sys.argv) > 2 else None
 buildType = sys.argv[3] if len(sys.argv) > 3 else "Not Defined"
 isCrossCompilation = False
 
-
 buildFolderName = "Build"
 installOutputDir = os.path.join(workSpaceDir, buildFolderName, "Install")
 artefactsOutputDir = os.path.join(workSpaceDir, buildFolderName, "Artefacts")
@@ -49,10 +48,23 @@ print(f"Work Space\t: {workSpaceDir}{NC}")
 print(f"Install to\t: {installOutputDir}{NC}")
 print(f"Artefacts to\t: {artefactsOutputDir}{NC}")
 
+isCrossCompilation = False
+if buildArch in valid_archs:
+    isCrossCompilation = (buildArch != "default")
+else:
+    if "darwin" in platform.system().lower():
+        isCrossCompilation = False
+    else:
+        exit_with_error("Undefined build architecture. Exiting.")
+
+print(f"{YELLOW}Cross\t\t: {isCrossCompilation}{NC}")
+
+### Log to file, revision 1
 def log2file(message):
     with open(os.path.join(workSpaceDir, "SolutionController.log"), "a") as f:
         f.write(message + "\n")
 
+### Execute command, revision 1
 def execute_command(cmd):
     print(f"{LIGHTBLUE}> Executed: {cmd}{NC}")
     log2file(cmd)
@@ -63,72 +75,92 @@ def execute_command(cmd):
     if result.returncode != 0:
         exit_with_error(f"Command failed: {cmd}")
 
+### Execute subprocess with shell, revision 1
+def execute_subprocess(cmd, executable):
+    print(f"{LIGHTBLUE}> Executed: {cmd}{NC}")
+    log2file(cmd)
+    result = subprocess.run(cmd, shell=True, executable=executable)
+    if result.returncode != 0:
+        exit_with_error(f"Command failed: {cmd}")
+
 def get_build_dir(kind):
     return os.path.join(buildFolderName, kind, buildArch, buildType)
 
-def is_cross():
-    global isCrossCompilation
-    if buildArch in valid_archs:
-        isCrossCompilation = (buildArch != "default")
-    else:
-        if "darwin" in platform.system().lower():
-            isCrossCompilation = False
-        else:
-            exit_with_error("Undefined build architecture. Exiting.")
-
-is_cross()
-
+### Conan install, revision 2
 def conan_install(bdir):
     with open("CMakeLists.txt") as f:
         cmake_content = f.read()
     shared_flag = "-o *:shared=True" if 'option(BUILD_SHARED_LIBS "Build using shared libraries" ON)' in cmake_content else "-o *:shared=False"
     profile = "default" if not isCrossCompilation else buildArch
-    # --settings=compiler.cppstd=17
-    # -vvv
-    cmd = f'conan install "{workSpaceDir}" --output-folder="{bdir}" --build=missing --profile={profile} --settings=build_type={buildType} {shared_flag}'
-    execute_command(cmd)
+    exeCmd = f'conan install "{workSpaceDir}" --output-folder="{os.path.join(workSpaceDir, bdir)}" --build=missing --profile {profile} --settings build_type={buildType} {shared_flag}'
+    execute_command(exeCmd)
 
+### CMake configuration, revision 2
 def cmake_configure(src, bdir):
-    toolchain_file = ""
-    conan_toolchain = os.path.join(bdir, "conan_toolchain.cmake")
-    if os.path.isfile(conan_toolchain):
-        print(f"{LIGHTBLUE}Using CONAN: True{NC}")
-        toolchain_file = "-DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake"
-        if isCrossCompilation:
-            print(f"{YELLOW}Cross compilation is enabled{NC}")
-            if platform.system().lower() in ["linux", "darwin"]:  # Linux nebo macOS
-                env_script = os.path.join(workSpaceDir, bdir, "conanbuild.sh")
-                env_cmd = f'source "{env_script}" && cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {toolchain_file} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir,buildArch,buildType)}"'
-                log2file(env_cmd)
-                result = subprocess.run(env_cmd, shell=True, executable="/bin/bash")
-                if result.returncode != 0:
-                    exit_with_error(f"Command failed: {env_cmd}")
-            elif platform.system().lower() == "windows":
-                env_cmd = f'call "{os.path.join(workSpaceDir, bdir, "conanbuild.bat")}" && cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {toolchain_file} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir,buildArch,buildType)}"'
-                log2file(env_cmd)
-                execute_command(env_cmd)
-    else:
-        print(f"{LIGHTBLUE}Using CONAN: False{NC}")
-        chain_dir = os.path.join(workSpaceDir, "Utilities", "CMakeToolChains")
-        if buildArch in valid_archs:
-            toolchain_file = f'-DCMAKE_TOOLCHAIN_FILE={os.path.abspath(os.path.join(chain_dir, buildArch + ".cmake"))}'
-        else:
-            toolchain_file =""
-    cmd = f'cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {toolchain_file} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir, buildArch, buildType)}"'
-    execute_command(cmd)
     
+    conan_toolchain_file_path = os.path.join(workSpaceDir, bdir, "conan_toolchain.cmake")
+    
+    # Conan
+    # ---------------------------------------------------------------------------------
+    if os.path.isfile(conan_toolchain_file_path):
+        print(f"{LIGHTBLUE} using file: conan_toolchain.cmake {NC}")
+        print(f"{LIGHTBLUE} using file:", conan_toolchain_file_path, NC)
+        DCMAKE_TOOLCHAIN_FILE_CMD = f'-DCMAKE_TOOLCHAIN_FILE="{conan_toolchain_file_path}"'
+
+        if platform.system().lower() in ["linux", "darwin"]: 
+            # CMake configuration for Linux and MacOS with Conan toolchain
+            conan_build_sh_file = os.path.join(workSpaceDir, bdir, "conanbuild.sh")
+            bashCmd = f'source "{conan_build_sh_file}" && cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {DCMAKE_TOOLCHAIN_FILE_CMD} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir, buildArch, buildType)}"'
+            execute_subprocess(bashCmd, "/bin/bash")
+        
+        if platform.system().lower() == "windows":
+
+            # CMake configuration for Windows x64 with Conan toolchain    
+            conan_build_bat_file = os.path.join(workSpaceDir, bdir, "conanbuild.bat")
+            winCmd = f'call "{conan_build_bat_file}" && cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {DCMAKE_TOOLCHAIN_FILE_CMD} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir, buildArch, buildType)}"'
+            execute_subprocess(winCmd, "cmd.exe")
+
+    # CMake solo
+    # This command condition will miss find_package(Conan's packages) in CMakeLists.txt
+    # But it is useful for CMake projects without Conan
+    # ---------------------------------------------------------------------------------
+    if not os.path.isfile(conan_toolchain_file_path):
+        if buildArch in valid_archs and buildArch != "default":
+            # CMake configuration for cross-compilation with solo toolchain
+            cmake_toolchain_file = os.path.join(workSpaceDir, "Utilities", "CMakeToolChains", buildArch + ".cmake")
+            DCMAKE_TOOLCHAIN_FILE_CMD = f"-DCMAKE_TOOLCHAIN_FILE=" + cmake_toolchain_file
+            print(f"{LIGHTBLUE} using file:", cmake_toolchain_file, NC)
+        else:
+            # CMake native
+            DCMAKE_TOOLCHAIN_FILE_CMD = ""   
+        # CMake solo command
+        cmd = f'cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {DCMAKE_TOOLCHAIN_FILE_CMD} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir,buildArch,buildType)}"'
+        execute_command(cmd)
+
+
+
+### CMake build, revision 3
 def cmake_build(bdir, target=None):
     if target is None:
-        cmd = f'cmake --build "{os.path.abspath(bdir)}" -j {os.cpu_count()}'
+        target = ""
     else:
-        cmd = f'cmake --build "{os.path.abspath(bdir)}" --target {target} -j {os.cpu_count()}'
-    
-    execute_command(cmd)
+        target = f"--target {target}"    
+        
+    conan_build_sh_file = os.path.join(workSpaceDir, bdir, 'conanbuild.sh')
+    if os.path.exists(conan_build_sh_file):
+        bashCmd = f'source "{conan_build_sh_file}" && cmake --build "{os.path.abspath(bdir)}" {target} -j {os.cpu_count()}'
+    else:
+        bashCmd = f'cmake --build "{os.path.abspath(bdir)}" {target} -j {os.cpu_count()}'
+    execute_subprocess(bashCmd, "/bin/bash")
 
+
+
+### Clean build folder, revision 1   
 def clean_build_folder(bdir):
     print(f"{LIGHTBLUE}> Removing build directory: {bdir}{NC}")
     log2file(f"Remove: {bdir}")
     shutil.rmtree(bdir, ignore_errors=True)
+
 
 def build_spltr(lib, st):
     if lib:
