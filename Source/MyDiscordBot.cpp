@@ -15,12 +15,11 @@
 
 #ifdef _WIN32
 #include <cstdio>
-#define popen _popen
+#define popen  _popen
 #define pclose _pclose
 #else
 #include <cstdio>
 #endif
-
 
 #define EMOJI_INTERVAL_SEC       (int)10
 #define DISCORD_OAUTH_TOKEN_FILE "/home/tomas/.discord_oauth.key"
@@ -101,7 +100,9 @@ bool MyDiscordBot::welcome()
             bot->message_create(msg);
             try
             {
-                dpp::message msgNeofetch(channelBot, this->getLinuxNeofetchCpp().substr(0, 1998) + "\n");
+                dpp::message msgNeofetch(
+                    channelBot, this->getLinuxNeofetchCpp().substr(0, 1998) + "\n"
+                );
                 bot->message_create(msgNeofetch);
             }
             catch (const std::runtime_error &e)
@@ -229,22 +230,9 @@ bool MyDiscordBot::startRegularlyGithubInfoMessage()
                     {
                         try
                         {
-                            const int                totalCommits = 3;
-                            std::vector<std::string> commitsV;
-                            gitHub->fetchLastXCommits(totalCommits, commitsV);
-
                             dpp::message msg(
                                 channelGithub,
-                                [&commitsV, totalCommits]() -> std::string
-                                {
-                                    std::string msg =
-                                        "Last " + std::to_string(totalCommits) + " commits:\n\n";
-                                    for (const auto &commit : commitsV)
-                                    {
-                                        msg += "🐙 " + commit + "\n";
-                                    }
-                                    return msg;
-                                }()
+                                [this]() -> std::string { return this->getGithubInfo(3); }()
                             );
                             bot->message_create(msg);
                         }
@@ -410,18 +398,20 @@ std::string MyDiscordBot::getCzechExchangeRate()
     return "Error: Could not get the Czech exchange rate!";
 }
 
-std::string MyDiscordBot::getGithubInfo()
+std::string MyDiscordBot::getGithubInfo(int totalCommits)
 {
     std::vector<std::string> commitsV;
-    gitHub->fetchLastXCommits(3, commitsV);
+    gitHub->fetchLastXCommits(totalCommits, commitsV);
 
-    std::string message;
+    std::string msg = "Last ";
+    msg += (totalCommits > 1) ? std::to_string(totalCommits) + " commits\n\n"
+                                                 : std::to_string(totalCommits) + " commit:\n\n";
     for (const auto &commit : commitsV)
     {
-        message += commit + "\n";
+        msg += "🐙 " + commit + "\n";
     }
 
-    return message;
+    return msg;
 }
 
 bool MyDiscordBot::loadVariousBotCommands()
@@ -429,6 +419,11 @@ bool MyDiscordBot::loadVariousBotCommands()
     bot->on_slashcommand(
         [&](const dpp::slashcommand_t &event)
         {
+            if (event.command.get_command_name() == "lastcommit")
+            {
+                event.reply(this->getGithubInfo(1));
+            }
+
             if (event.command.get_command_name() == "ping")
             {
                 event.reply("Pong! 🏓");
@@ -451,6 +446,9 @@ bool MyDiscordBot::loadVariousBotCommands()
     bot->on_ready(
         [&](const dpp::ready_t &event)
         {
+            /* lastcommit */
+            bot->global_command_create(dpp::slashcommand("lastcommit", "Last commit!", bot->me.id));
+
             /* ping */
             bot->global_command_create(dpp::slashcommand("ping", "Ping pong!", bot->me.id));
 

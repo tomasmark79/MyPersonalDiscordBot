@@ -25,7 +25,7 @@ class MyDiscordBot
     std::string getLinuxNeofetchCpp();
     std::string getBitcoinPrice();
     std::string getCzechExchangeRate();
-    std::string getGithubInfo();
+    std::string getGithubInfo(int totalCommits);
 
     int getRandom(int min, int max)
     {
