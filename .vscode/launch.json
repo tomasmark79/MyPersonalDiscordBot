@@ -6,7 +6,7 @@
             "name": "Debug Standalone Target",
             "type": "cppdbg",
             "request": "launch", /*🪲*/
-            "program": "${workspaceFolder}/Build/Standalone/default/Debug/VCMStandalone", 
+            "program": "${workspaceFolder}/Build/Standalone/default/Debug/DiscordBotStandalone", 
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -27,7 +27,7 @@
             "name": "Debug RelWithDebInfo Standalone Target",
             "type": "cppdbg",
             "request": "launch", /*🪲*/
-            "program": "${workspaceFolder}/Build/Standalone/default/RelWithDebInfo/VCMController",
+            "program": "${workspaceFolder}/Build/Standalone/default/RelWithDebInfo/DiscordBotStandalone",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
