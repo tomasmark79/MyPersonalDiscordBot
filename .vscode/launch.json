@@ -6,7 +6,7 @@
             "name": "Debug Standalone Target",
             "type": "cppdbg",
             "request": "launch", /*🪲*/
-            "program": "${workspaceFolder}/Build/Standalone/default/Debug/DiscordBotStandalone", 
+            "program": "${workspaceFolder}/Build/Standalone/default/Debug/VCMStandalone", 
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -41,7 +41,8 @@
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }
-            ]
+            ],
+            "preLaunchTask": "Direct Build"
         }
 
     ]

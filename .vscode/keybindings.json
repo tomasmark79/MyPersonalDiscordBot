@@ -11,12 +11,12 @@
     {
         "key": "shift+f7",
         "command": "workbench.action.tasks.runTask",
-        "args": "MarkWare Tasks Menu"
+        "args": "MarkWare Tasks"
     },
     {
         "key": "ctrl+alt+s",
         "command": "workbench.action.tasks.runTask",
-        "args": "MarkWare Special Tasks Menu"
+        "args": "MarkWare Special Tasks"
     },
     {
         "key": "ctrl+alt+c",
