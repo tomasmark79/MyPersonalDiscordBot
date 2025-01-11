@@ -36,8 +36,8 @@ std::unique_ptr<dpp::cluster> bot;
 EmojiTools  emojiTools;
 std::string emoji;
 
-const dpp::snowflake channelBot = 1317756246442512404;
-const dpp::snowflake channelGithub = 1322675745935462461;
+const dpp::snowflake channelDev = 1327591560065449995;
+
 
 std::atomic<bool> stopRefreshMessageThread(false);
 #define REGULAR_REFRESH_MESSAGE_INTERVAL_SEC (int)10800 // 3 hours
@@ -98,12 +98,12 @@ bool MyDiscordBot::welcome()
     bot->on_ready(
         [&](const dpp::ready_t &event)
         {
-            dpp::message msg(channelBot, "DSDotBot rose from the dead in the environment:\n");
+            dpp::message msg(channelDev, "DSDotBot rose from the dead in the environment:\n");
             bot->message_create(msg);
             try
             {
                 dpp::message msgNeofetch(
-                    channelBot, this->getLinuxNeofetchCpp().substr(0, 1998) + "\n"
+                    channelDev, this->getLinuxNeofetchCpp().substr(0, 1998) + "\n"
                 );
                 bot->message_create(msgNeofetch);
             }
@@ -130,7 +130,7 @@ bool MyDiscordBot::startRegularlyRefreshMessage()
                         {
                             std::string message = getLinuxFortuneCpp();
                             // std::cout << message << std::endl;
-                            dpp::message msg(channelBot, "Quote\n\t" + message);
+                            dpp::message msg(channelDev, "Quote\n\t" + message);
                             bot->message_create(msg);
                         }
                         catch (const std::runtime_error &e)
@@ -164,7 +164,7 @@ bool MyDiscordBot::startRegularlyBitcoinPriceMessage()
                         {
                             std::string message = getBitcoinPrice();
                             // std::cout << message << std::endl;
-                            dpp::message msg(channelBot, "\n🪙 " + message);
+                            dpp::message msg(channelDev, "\n🪙 " + message);
                             bot->message_create(msg);
                         }
                         catch (const std::runtime_error &e)
@@ -199,7 +199,7 @@ bool MyDiscordBot::startRegularlyCzechExchangeRateMessage()
                         {
                             std::string message = getCzechExchangeRate();
                             // std::cout << message << std::endl;
-                            dpp::message msg(channelBot, "Czech Exchange Rates 🇨🇿\n" + message);
+                            dpp::message msg(channelDev, "Czech Exchange Rates 🇨🇿\n" + message);
                             bot->message_create(msg);
                         }
                         catch (const std::runtime_error &e)
