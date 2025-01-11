@@ -2,7 +2,6 @@
 #include <mydiscordbot/version.h>
 
 #include <EmojiTools/EmojiTools.hpp>
-#include <MyGitHubApi/MyGitHubApi.hpp>
 #include <curl/curl.h>
 #include <fmt/format.h>
 
@@ -22,16 +21,17 @@
 #endif
 
 #define EMOJI_INTERVAL_SEC       (int)10
+
 #define DISCORD_OAUTH_TOKEN_FILE "/home/tomas/.discord_oauth.key"
+
 #define URL_COIN_GECKO           "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
+
 #define URL_EXCHANGE_RATES_CZ                                                                      \
     "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/"                      \
     "kurzy-devizoveho-trhu/denni_kurz.txt"
 
-std::atomic<bool> stopTimerThread(false);
-
 std::unique_ptr<dpp::cluster> bot;
-std::unique_ptr<MyGitHubApi>  gitHub;
+// std::unique_ptr<MyGitHubApi>  gitHub;
 
 EmojiTools  emojiTools;
 std::string emoji;
@@ -51,11 +51,14 @@ std::atomic<bool> stopGetGithubInfo(false);
 std::atomic<bool> stopGetCzechExchangeRates(false);
 #define CZECH_EXCHANGERATES_MESSAGE_INTERVAL_SEC (int)43200 * 2 // 24 hours
 
+std::atomic<bool> stopGithubEventPooling(false);
+#define GITHUB_EVENT_POLLING_INTERVAL_SEC (int)10
+
 MyDiscordBot::MyDiscordBot()
 {
     std::cout << "--- MyDiscordBot v." << MYDISCORDBOT_VERSION << " instantiated ---" << std::endl;
     std::cout << "--- " << curl_version() << " linked ---" << std::endl;
-    gitHub = std::make_unique<MyGitHubApi>();
+    // gitHub = std::make_unique<MyGitHubApi>();
     initCluster();
 }
 
@@ -82,7 +85,6 @@ bool MyDiscordBot::initCluster()
         startRegularlyRefreshMessage();
         startRegularlyBitcoinPriceMessage();
         startRegularlyCzechExchangeRateMessage();
-        startRegularlyGithubInfoMessage();
         loadVariousBotCommands();
 
         bot->start(dpp::st_wait);
@@ -215,41 +217,6 @@ bool MyDiscordBot::startRegularlyCzechExchangeRateMessage()
         }
     );
 
-    return true;
-}
-
-bool MyDiscordBot::startRegularlyGithubInfoMessage()
-{
-    bot->on_ready(
-        [&](const dpp::ready_t &event)
-        {
-            std::thread threadGithubInfoMessage(
-                [&]() -> void
-                {
-                    while (!stopGetGithubInfo.load())
-                    {
-                        try
-                        {
-                            dpp::message msg(
-                                channelGithub,
-                                [this]() -> std::string { return this->getGithubInfo(3); }()
-                            );
-                            bot->message_create(msg);
-                        }
-                        catch (const std::runtime_error &e)
-                        {
-                            std::cerr << "Error: " << e.what() << std::endl;
-                        }
-
-                        std::this_thread::sleep_for(
-                            std::chrono::seconds(GITHUB_INFO_MESSAGE_INTERVAL_SEC)
-                        );
-                    }
-                }
-            );
-            threadGithubInfoMessage.detach();
-        }
-    );
     return true;
 }
 
@@ -398,32 +365,11 @@ std::string MyDiscordBot::getCzechExchangeRate()
     return "Error: Could not get the Czech exchange rate!";
 }
 
-std::string MyDiscordBot::getGithubInfo(int totalCommits)
-{
-    std::vector<std::string> commitsV;
-    gitHub->fetchLastXCommits(totalCommits, commitsV);
-
-    std::string msg = "Last ";
-    msg += (totalCommits > 1) ? std::to_string(totalCommits) + " commits\n\n"
-                                                 : std::to_string(totalCommits) + " commit:\n\n";
-    for (const auto &commit : commitsV)
-    {
-        msg += "🐙 " + commit + "\n";
-    }
-
-    return msg;
-}
-
 bool MyDiscordBot::loadVariousBotCommands()
 {
     bot->on_slashcommand(
         [&](const dpp::slashcommand_t &event)
         {
-            if (event.command.get_command_name() == "lastcommit")
-            {
-                event.reply(this->getGithubInfo(1));
-            }
-
             if (event.command.get_command_name() == "ping")
             {
                 event.reply("Pong! 🏓");
@@ -446,9 +392,6 @@ bool MyDiscordBot::loadVariousBotCommands()
     bot->on_ready(
         [&](const dpp::ready_t &event)
         {
-            /* lastcommit */
-            bot->global_command_create(dpp::slashcommand("lastcommit", "Last commit!", bot->me.id));
-
             /* ping */
             bot->global_command_create(dpp::slashcommand("ping", "Ping pong!", bot->me.id));
 
@@ -462,3 +405,23 @@ bool MyDiscordBot::loadVariousBotCommands()
 
     return true;
 }
+
+std::string MyDiscordBot::getCurrentTime()
+    {
+        time_t    now = time(0);
+        struct tm tstruct;
+        char      buf[80];
+        tstruct = *localtime(&now);
+        strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
+        return buf;
+    }
+
+
+    int MyDiscordBot::getRandom(int min, int max)
+    {
+        std::random_device              rd;
+        std::mt19937                    gen(rd());
+        std::uniform_int_distribution<> dis(min, max);
+        int                             random = dis(gen);
+        return random;
+    }

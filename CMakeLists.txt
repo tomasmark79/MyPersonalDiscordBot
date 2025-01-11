@@ -47,7 +47,7 @@ CPMAddPackage("gh:TheLartians/PackageProject.cmake@1.12.0")
 CPMAddPackage("gh:cpm-cmake/CPMLicenses.cmake@0.0.7")
 CPMAddPackage("gh:tomasmark79/EmojiTools#main")
 #CPMAddPackage("gh:tomasmark79/MyGitHubApi#main")
-CPMAddPackage(NAME MyGitHubApi SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../MyGitHubApi/)
+#CPMAddPackage(NAME MyGitHubApi SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}/../MyGitHubApi/)
 
 cpm_licenses_create_disclaimer_target(
     write-licenses-${LIBRARY_NAME} "${CMAKE_CURRENT_BINARY_DIR}/third_party.txt" "${CPM_PACKAGES}")
@@ -118,7 +118,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 target_link_libraries(
     ${LIBRARY_NAME}
     PUBLIC dsdotname::EmojiTools
-    PUBLIC dsdotname::MyGitHubApi
     PRIVATE ZLIB::ZLIB
     PRIVATE fmt::fmt
     PRIVATE nlohmann_json::nlohmann_json
