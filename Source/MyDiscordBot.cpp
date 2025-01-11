@@ -20,11 +20,11 @@
 #include <cstdio>
 #endif
 
-#define EMOJI_INTERVAL_SEC       (int)10
+#define EMOJI_INTERVAL_SEC (int)10
 
 #define DISCORD_OAUTH_TOKEN_FILE "/home/tomas/.discord_oauth.key"
 
-#define URL_COIN_GECKO           "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
+#define URL_COIN_GECKO "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
 
 #define URL_EXCHANGE_RATES_CZ                                                                      \
     "https://www.cnb.cz/cs/financni-trhy/devizovy-trh/kurzy-devizoveho-trhu/"                      \
@@ -37,7 +37,6 @@ EmojiTools  emojiTools;
 std::string emoji;
 
 const dpp::snowflake channelDev = 1327591560065449995;
-
 
 std::atomic<bool> stopRefreshMessageThread(false);
 #define REGULAR_REFRESH_MESSAGE_INTERVAL_SEC (int)10800 // 3 hours
@@ -77,28 +76,26 @@ bool MyDiscordBot::initCluster()
     std::string token;
     if (getToken(token, DISCORD_OAUTH_TOKEN_FILE))
     {
-        /* smart pointer */
         bot =
             std::make_unique<dpp::cluster>(token, dpp::i_default_intents | dpp::i_message_content);
 
-        welcome();
-        startRegularlyRefreshMessage();
-        startRegularlyBitcoinPriceMessage();
-        startRegularlyCzechExchangeRateMessage();
+        welcomeWithNeofetch();
+        startPollingFortune();
+        startPollingBTCPrice();
+        startPollingCZExchRate();
         loadVariousBotCommands();
-
         bot->start(dpp::st_wait);
     }
     return true;
 }
 
-bool MyDiscordBot::welcome()
+bool MyDiscordBot::welcomeWithNeofetch()
 {
     // DSDotBot loaded
     bot->on_ready(
         [&](const dpp::ready_t &event)
         {
-            dpp::message msg(channelDev, "DSDotBot rose from the dead in the environment:\n");
+            dpp::message msg(channelDev, "DSDotBot loaded:\n");
             bot->message_create(msg);
             try
             {
@@ -116,7 +113,7 @@ bool MyDiscordBot::welcome()
     return true;
 }
 
-bool MyDiscordBot::startRegularlyRefreshMessage()
+bool MyDiscordBot::startPollingFortune()
 {
     bot->on_ready(
         [&](const dpp::ready_t &event)
@@ -150,7 +147,7 @@ bool MyDiscordBot::startRegularlyRefreshMessage()
     return true;
 }
 
-bool MyDiscordBot::startRegularlyBitcoinPriceMessage()
+bool MyDiscordBot::startPollingBTCPrice()
 {
     bot->on_ready(
         [&](const dpp::ready_t &event)
@@ -185,7 +182,7 @@ bool MyDiscordBot::startRegularlyBitcoinPriceMessage()
 }
 
 // TODO Draw as bitmap table will looks better 😎
-bool MyDiscordBot::startRegularlyCzechExchangeRateMessage()
+bool MyDiscordBot::startPollingCZExchRate()
 {
     bot->on_ready(
         [&](const dpp::ready_t &event)
@@ -407,21 +404,20 @@ bool MyDiscordBot::loadVariousBotCommands()
 }
 
 std::string MyDiscordBot::getCurrentTime()
-    {
-        time_t    now = time(0);
-        struct tm tstruct;
-        char      buf[80];
-        tstruct = *localtime(&now);
-        strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
-        return buf;
-    }
+{
+    time_t    now = time(0);
+    struct tm tstruct;
+    char      buf[80];
+    tstruct = *localtime(&now);
+    strftime(buf, sizeof(buf), "%Y-%m-%d %X", &tstruct);
+    return buf;
+}
 
-
-    int MyDiscordBot::getRandom(int min, int max)
-    {
-        std::random_device              rd;
-        std::mt19937                    gen(rd());
-        std::uniform_int_distribution<> dis(min, max);
-        int                             random = dis(gen);
-        return random;
-    }
+int MyDiscordBot::getRandom(int min, int max)
+{
+    std::random_device              rd;
+    std::mt19937                    gen(rd());
+    std::uniform_int_distribution<> dis(min, max);
+    int                             random = dis(gen);
+    return random;
+}

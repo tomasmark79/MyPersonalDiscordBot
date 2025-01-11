@@ -283,7 +283,8 @@ def format_clang():
         for file in files:
             if file.endswith((".c", ".cpp", ".h", ".hpp")):
                 full_path = os.path.join(root, file)
-                cmd = f'clang-format -i "{full_path}"'
+                #cmd = f'clang-format -i "{full_path}"'
+                cmd = f'clang-format-19 -i "{full_path}"'
                 print(f"Processing: {full_path}")
                 execute_command(cmd)
                 print(f"Done: {full_path}")

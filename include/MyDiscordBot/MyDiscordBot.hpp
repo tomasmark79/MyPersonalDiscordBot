@@ -11,12 +11,11 @@ class MyDiscordBot
 {
   public:
     bool loadVariousBotCommands();
+    bool startPollingFortune();
+    bool startPollingBTCPrice();
+    bool startPollingCZExchRate();
 
-    bool startRegularlyRefreshMessage();
-    bool startRegularlyBitcoinPriceMessage();
-    bool startRegularlyCzechExchangeRateMessage();
-
-    bool welcome();
+    bool welcomeWithNeofetch();
     bool initCluster();
     bool getToken(std::string &token, const std::string &filePath);
 
@@ -24,10 +23,8 @@ class MyDiscordBot
     std::string getLinuxNeofetchCpp();
     std::string getBitcoinPrice();
     std::string getCzechExchangeRate();
-
-    int getRandom(int min, int max);
-
     std::string getCurrentTime();
+    int         getRandom(int min, int max);
 
     MyDiscordBot();
     ~MyDiscordBot();
