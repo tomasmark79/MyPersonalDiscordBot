@@ -38,6 +38,11 @@ std::string emoji;
 
 const dpp::snowflake channelDev = 1327591560065449995;
 
+std::atomic<bool> stopRefreshEmojies(false);
+std::atomic<bool> isRefreshEmojiesRunning(false);
+
+#define REGULAR_REFRESH_EMOJIES_MESSAGE_INTERVAL_SEC (int)10 // CCA 3 hours
+
 std::atomic<bool> stopRefreshMessageThread(false);
 #define REGULAR_REFRESH_MESSAGE_INTERVAL_SEC (int)10800 // 3 hours
 
@@ -110,6 +115,39 @@ bool MyDiscordBot::welcomeWithNeofetch()
             }
         }
     );
+    return true;
+}
+
+bool MyDiscordBot::startPollingEmojies()
+{
+    {
+        std::thread threadRegularRefreshEmojiesMessage(
+            [&]() -> void
+            {
+                while (!stopRefreshEmojies.load())
+                {
+                    try
+                    {
+                        std::string message = emojiTools.getRandomEmoji(emoji);
+                        // std::cout << message << std::endl;
+                        dpp::message msg(channelDev, message);
+                        bot->message_create(msg);
+                        isRefreshEmojiesRunning.store(true);
+                    }
+                    catch (const std::runtime_error &e)
+                    {
+                        std::cerr << "Error: " << e.what() << std::endl;
+                        isRefreshEmojiesRunning.store(false);
+                    }
+
+                    std::this_thread::sleep_for(
+                        std::chrono::seconds(REGULAR_REFRESH_EMOJIES_MESSAGE_INTERVAL_SEC)
+                    );
+                }
+            }
+        );
+        threadRegularRefreshEmojiesMessage.detach();
+    }
     return true;
 }
 
@@ -388,6 +426,34 @@ bool MyDiscordBot::loadVariousBotCommands()
                 event.reply(msg);
             }
 
+            if (event.command.get_command_name() == "noemojies")
+            {
+                if (!isRefreshEmojiesRunning.load())
+                {
+                    dpp::message msg(channelDev, "Emojies are already stopped! 🛑");
+                    event.reply(msg);
+                    return;
+                }
+                event.reply("Emojies are stopped! 🛑");
+                isRefreshEmojiesRunning.store(false);
+                stopRefreshEmojies.store(true);
+            }
+
+            if (event.command.get_command_name() == "emojies")
+            {
+
+                if (isRefreshEmojiesRunning.load())
+                {
+                    dpp::message msg(channelDev, "Emojies already running! 🕒");
+                    event.reply(msg);
+                    return;
+                }
+
+                event.reply("Emojies are being sent in regularly interval 10 seconds! 🕒");
+                stopRefreshEmojies.store(false);
+                startPollingEmojies();
+            }
+
             if (event.command.get_command_name() == "emoji")
             {
                 event.reply(emojiTools.getRandomEmoji(emoji));
@@ -414,7 +480,7 @@ bool MyDiscordBot::loadVariousBotCommands()
             {
                 dpp::message msgNeofetch(
                     channelDev, this->getLinuxNeofetchCpp().substr(0, 1998) + "\n"
-                 );
+                );
                 event.reply(msgNeofetch);
             }
         }
@@ -431,6 +497,16 @@ bool MyDiscordBot::loadVariousBotCommands()
 
             /* fortune */
             bot->global_command_create(dpp::slashcommand("fortune", "Get random Quote!", bot->me.id)
+            );
+
+            /* noemojies */
+            bot->global_command_create(dpp::slashcommand(
+                "noemojies", "Stop to getting random Emoji in regularly interval 10 seconds!", bot->me.id
+            ));
+
+            /* emojies */
+            bot->global_command_create(
+                dpp::slashcommand("emojies", "Get random Emoji in regularly interval 10 seconds!", bot->me.id)
             );
 
             /* emoji */

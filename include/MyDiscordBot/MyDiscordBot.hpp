@@ -11,6 +11,7 @@ class MyDiscordBot
 {
   public:
     bool loadVariousBotCommands();
+    bool startPollingEmojies();
     bool startPollingFortune();
     bool startPollingBTCPrice();
     bool startPollingCZExchRate();
