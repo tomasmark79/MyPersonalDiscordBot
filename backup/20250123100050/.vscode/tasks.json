@@ -8,9 +8,9 @@
             "type": "pickString",
             "description": "Select MarkWare Special Task",
             "options": [
-                "Permutate scenarios ☕"
+                "Permutate All Tasks 🕧"
             ],
-            "default": "Permutate scenarios ☕"
+            "default": "Permutate All Tasks 🕧"
         },
         {
             /* MENU ITEMS */
@@ -18,45 +18,43 @@
             "type": "pickString",
             "description": "Select MarkWare Task",
             "options": [
-                "🚀 Zero to Build [s]",
-                "🦸 Zero to Hero [s]",
-                "🧹 Clean folder [s]",
-                "🗡️ Conan install [s]",
-                "🔧 CMake configure [s]",
-                "🪲 CMake configure with debugger [s]",
-                "🔨 Build [s]",
-                "📜 Collect Licenses [s]",
-                "📌 Install Artefacts [s]",
-                "📦 Release Tarballs [s]",
+                "Zero to Hero 🦸",
+                "Zero to Release 🚀",
+                "Clean 🧹",
+                "Conan 🗡️",
+                "Configure 🔧",
+                "Configure with CMake Debugger 🪲",
+                "Build 🔨",
+                "Collect Licenses 📜",
+                "Install Artefacts 📌",
+                "Release Artefacts 📦",
                 "",
-                "🚀 Zero to Build [l]",
-                "🦸 Zero to Hero [l]",
-                "🧹 Clean folder [l]",
-                "🗡️ Conan install [l]",
-                "🔧 CMake configure [l]",
-                "🪲 CMake configure with debugger [l]",
-                "🔨 Build [l]",
-                "📜 Collect Licenses [l]",
-                "📌 Install Artefacts [l]",
-                "📦 Release Tarballs [l]",
+                "📚 Zero to Hero 🦸",
+                "📚 Clean 🧹",
+                "📚 Conan 🗡️",
+                "📚 Configure 🔧",
+                "📚 Configure with CMake Debugger 🪲",
+                "📚 Build 🔨",
+                "📚 Collect Licenses 📜",
+                "📚 Install Artefacts 📌",
+                "📚 Release Artefacts 📦",
                 "",
-                "🚀 Zero to Build [sl]",
-                "🦸 Zero to Hero [sl]",
-                "🧹 Clean folder [sl]",
-                "🗡️ Conan install [sl]",
-                "🔧 CMake configure [sl]",
-                "🪲 CMake configure with debugger [sl]",
-                "🔨 Build [sl]",
-                "📜 Collect Licenses [sl]",
-                "📌 Install Artefacts [sl]",
-                "📦 Release Tarballs [sl]",
+                "🎯 Zero to Hero 🦸",
+                "🎯 Clean 🧹",
+                "🎯 Conan 🗡️",
+                "🎯 Configure 🔧",
+                "🎯 Configure with CMake Debugger 🪲",
+                "🎯 Build 🔨",
+                "🎯 Collect Licenses 📜",
+                "🎯 Install Artefacts 📌",
+                "🎯 Release Artefacts 📦",
                 "",
-                "⚔️ conan graph.html",
-                "🔍 lint",
-                "📐 clang-format",
-                "📏 cmake-format"
+                "⚔️ Conan graph.html",
+                "🔍 Lint C/C++ files",
+                "📐 Format C/C++ files (Clang)",
+                "📏 Format CMake files"
             ],
-            "default": "🔨 Build [s]"
+            "default": "Build 🔨"
         },
         {
             /* ARCH ITEMS */
@@ -134,7 +132,7 @@
             "command": "python3",
             "args": [
                 "${workspaceFolder}/SolutionController.py",
-                "🔨 Build [s]",
+                "Build 🔨",
                 "default",
                 "Debug"
             ],
@@ -152,7 +150,7 @@
             "command": "python3",
             "args": [
                 "${workspaceFolder}/SolutionController.py",
-                "🔍 lint",
+                "🔍 Lint C/C++ files",
                 "${input:buildArch}",
                 "${input:buildType}"
             ],
@@ -170,7 +168,7 @@
             "command": "python3",
             "args": [
                 "${workspaceFolder}/SolutionController.py",
-                "📐 clang-format",
+                "📐 Format C/C++ files (Clang)",
                 "${input:buildArch}",
                 "${input:buildType}"
             ],
@@ -188,7 +186,7 @@
             "command": "python3",
             "args": [
                 "${workspaceFolder}/SolutionController.py",
-                "📏 cmake-format",
+                "📏 Format CMake files",
                 "${input:buildArch}",
                 "${input:buildType}"
             ],

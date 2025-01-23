@@ -156,10 +156,9 @@ def cmake_configure(src, bdir, isCMakeDebugger=False):
                 except json.JSONDecodeError as e:
                     print(f"Error decoding JSON: {e}")
                     exit(1) 
-                print("If you want to debug CMake, please put a breakpoint in your CMakeLists.txt and start debugging in Visual Studio Code.")
-                bashCmd = f'source "{conan_build_sh_file}" && cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {DCMAKE_TOOLCHAIN_FILE_CMD} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir, buildArch, buildType)}" --debugger --debugger-pipe /tmp/cmake-debugger-pipe-{unique_id}'
 
-            # Execute comfigure bash command
+
+                bashCmd = f'source "{conan_build_sh_file}" && cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {DCMAKE_TOOLCHAIN_FILE_CMD} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir, buildArch, buildType)}" --debugger --debugger-pipe /tmp/cmake-debugger-pipe-{unique_id}'
             execute_subprocess(bashCmd, "/bin/bash")
         
         if platform.system().lower() == "windows":
@@ -184,6 +183,8 @@ def cmake_configure(src, bdir, isCMakeDebugger=False):
         # CMake solo command
         cmd = f'cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {DCMAKE_TOOLCHAIN_FILE_CMD} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir,buildArch,buildType)}"'
         execute_command(cmd)
+
+
 
 ### CMake build, revision 3
 def cmake_build(bdir, target=None):
@@ -303,7 +304,7 @@ def lint_c():
             for file in files:
                 if file.endswith((".c", ".cpp", ".h", ".hpp")):
                     full_path = os.path.join(root, file)
-                    cmd = f'clang-tidy-19 -p "{bdir}" "{full_path}"'
+                    cmd = f'clang-tidy -p "{bdir}" "{full_path}"'
                     print(f"Linting: {full_path}")
                     execute_command(cmd)
                     print(f"Done: {full_path}")
@@ -357,41 +358,41 @@ def conan_graph():
     execute_command(cmd)
 
 task_map = {
-    "🚀 Zero to Build [sl]": lambda: (clean_spltr(True, True), conan_spltr(True, True), configure_spltr(True, True), build_spltr(True, True), exit_ok("")),
-    "🚀 Zero to Build [l]": lambda: (clean_spltr(True, False), conan_spltr(True, False), configure_spltr(True, False), build_spltr(True, False), exit_ok("")),
-    "🚀 Zero to Build [s]": lambda: (clean_spltr(False, True), conan_spltr(False, True), configure_spltr(False, True), build_spltr(False, True), exit_ok("")),
-    "🦸 Zero to Hero [sl]": lambda: (clean_spltr(True, True), conan_spltr(True, True), configure_spltr(True, True), build_spltr(True, True), install_spltr(True, True), artefacts_spltr(True, True),exit_ok("")),
-    "🦸 Zero to Hero [l]": lambda: (clean_spltr(True, False), conan_spltr(True, False), configure_spltr(True, False), build_spltr(True, False), install_spltr(True, False), artefacts_spltr(True, False),exit_ok("")),
-    "🦸 Zero to Hero [s]": lambda: (clean_spltr(False, True), conan_spltr(False, True), configure_spltr(False, True), build_spltr(False, True), install_spltr(False, True), artefacts_spltr(False, True),exit_ok("")),
-    "🧹 Clean folder [sl]": lambda: (clean_spltr(True, True), exit_ok("")),
-    "🧹 Clean folder [l]": lambda: (clean_spltr(True, False), exit_ok("")), 
-    "🧹 Clean folder [s]": lambda: (clean_spltr(False, True), exit_ok("")),
-    "🗡️ Conan install [sl]": lambda: (conan_spltr(True, True), exit_ok("")),
-    "🗡️ Conan install [l]": lambda: (conan_spltr(True, False), exit_ok("")),
-    "🗡️ Conan install [s]": lambda: (conan_spltr(False, True), exit_ok("")),
-    "🔧 CMake configure [sl]": lambda: (configure_spltr(True, True), exit_ok("")),
-    "🔧 CMake configure [l]": lambda: (configure_spltr(True, False), exit_ok("")),
-    "🔧 CMake configure [s]": lambda: (configure_spltr(False, True), exit_ok("")),
-    "🪲 CMake configure with debugger [sl]": lambda: (configure_spltr_cmake_debugger(True, True), exit_ok("")),
-    "🪲 CMake configure with debugger [l]": lambda: (configure_spltr_cmake_debugger(True, False), exit_ok("")),
-    "🪲 CMake configure with debugger [s]": lambda: (configure_spltr_cmake_debugger(False, True), exit_ok("")),
-    "🔨 Build [sl]": lambda: (build_spltr(True, True), exit_ok("")),
-    "🔨 Build [l]": lambda: (build_spltr(True, False), exit_ok("")),
-    "🔨 Build [s]": lambda: (build_spltr(False, True), exit_ok("")),
-    "📜 Collect Licenses [sl]": lambda: (license_spltr(True, True), exit_ok("")),
-    "📜 Collect Licenses [l]": lambda: (license_spltr(True, False), exit_ok("")),
-    "📜 Collect Licenses [s]": lambda: (license_spltr(False, True), exit_ok("")),
-    "📌 Install Artefacts [sl]": lambda: (install_spltr(True, True), exit_ok("")),
-    "📌 Install Artefacts [l]": lambda: (install_spltr(True, False), exit_ok("")),
-    "📌 Install Artefacts [s]": lambda: (install_spltr(False, True), exit_ok("")),
-    "📦 Release Tarballs [sl]": lambda: (artefacts_spltr(True, True), exit_ok("")),
-    "📦 Release Tarballs [l]": lambda: (artefacts_spltr(True, False), exit_ok("")),
-    "📦 Release Tarballs [s]": lambda: (artefacts_spltr(False, True), exit_ok("")),
-    "Permutate scenarios ☕": lambda: (permutate_all_tasks(), exit_ok("")),
-    "⚔️ conan graph.html": lambda: (conan_graph(), exit_ok("")),
-    "🔍 lint": lambda: (lint_c(), exit_ok("")),
-    "📐 clang-format": lambda: (format_clang(), exit_ok("")),
-    "📏 cmake-format": lambda: (format_cmake(), exit_ok("")),
+    "Zero to Hero 🦸": lambda: (clean_spltr(True, True), conan_spltr(True, True), configure_spltr(True, True), build_spltr(True, True), exit_ok("")),
+    "📚 Zero to Hero 🦸": lambda: (clean_spltr(True, False), conan_spltr(True, False), configure_spltr(True, False), build_spltr(True, False), exit_ok("")),
+    "🎯 Zero to Hero 🦸": lambda: (clean_spltr(False, True), conan_spltr(False, True), configure_spltr(False, True), build_spltr(False, True), exit_ok("")),
+    "Zero to Release 🚀": lambda: (clean_spltr(True, True), conan_spltr(True, True), configure_spltr(True, True), build_spltr(True, True), install_spltr(True, True), artefacts_spltr(True, True),exit_ok("")),
+    "📚 Zero to Release 🚀": lambda: (clean_spltr(True, False), conan_spltr(True, False), configure_spltr(True, False), build_spltr(True, False), install_spltr(True, False), artefacts_spltr(True, False),exit_ok("")),
+    "🎯 Zero to Release 🚀": lambda: (clean_spltr(False, True), conan_spltr(False, True), configure_spltr(False, True), build_spltr(False, True), install_spltr(False, True), artefacts_spltr(False, True),exit_ok("")),
+    "Clean 🧹": lambda: (clean_spltr(True, True), exit_ok("")),
+    "📚 Clean 🧹": lambda: (clean_spltr(True, False), exit_ok("")),
+    "🎯 Clean 🧹": lambda: (clean_spltr(False, True), exit_ok("")),
+    "Conan 🗡️": lambda: (conan_spltr(True, True), exit_ok("")),
+    "📚 Conan 🗡️": lambda: (conan_spltr(True, False), exit_ok("")),
+    "🎯 Conan 🗡️": lambda: (conan_spltr(False, True), exit_ok("")),
+    "Configure 🔧": lambda: (configure_spltr(True, True), exit_ok("")),
+    "📚 Configure 🔧": lambda: (configure_spltr(True, False), exit_ok("")),
+    "🎯 Configure 🔧": lambda: (configure_spltr(False, True), exit_ok("")),
+    "Configure with CMake Debugger 🪲": lambda: (configure_spltr_cmake_debugger(True, True), exit_ok("")),
+    "📚 Configure with CMake Debugger 🪲": lambda: (configure_spltr_cmake_debugger(True, False), exit_ok("")),
+    "🎯 Configure with CMake Debugger 🪲": lambda: (configure_spltr_cmake_debugger(False, True), exit_ok("")),
+    "Build 🔨": lambda: (build_spltr(True, True), exit_ok("")),
+    "📚 Build 🔨": lambda: (build_spltr(True, False), exit_ok("")),
+    "🎯 Build 🔨": lambda: (build_spltr(False, True), exit_ok("")),
+    "Collect Licenses 📜": lambda: (license_spltr(True, True), exit_ok("")),
+    "📚 Collect Licenses 📜": lambda: (license_spltr(True, False), exit_ok("")),
+    "🎯 Collect Licenses 📜": lambda: (license_spltr(False, True), exit_ok("")),
+    "Install Artefacts 📌": lambda: (install_spltr(True, True), exit_ok("")),
+    "📚 Install Artefacts 📌": lambda: (install_spltr(True, False), exit_ok("")),
+    "🎯 Install Artefacts 📌": lambda: (install_spltr(False, True), exit_ok("")),
+    "Release Artefacts 📦": lambda: (artefacts_spltr(True, True), exit_ok("")),
+    "📚 Release Artefacts 📦": lambda: (artefacts_spltr(True, False), exit_ok("")),
+    "🎯 Release Artefacts 📦": lambda: (artefacts_spltr(False, True), exit_ok("")),
+    "Permutate All Tasks 🕧": lambda: (permutate_all_tasks(), exit_ok("")),
+    "⚔️ Conan graph.html": lambda: (conan_graph(), exit_ok("")),
+    "🔍 Lint C/C++ files": lambda: (lint_c(), exit_ok("")),
+    "📐 Format C/C++ files (Clang)": lambda: (format_clang(), exit_ok("")),
+    "📏 Format CMake files": lambda: (format_cmake(), exit_ok("")),
     "": lambda: exit_ok("")
 }
 
