@@ -367,9 +367,16 @@ bool MyDiscordBot::loadVariousBotCommands()
     bot->on_slashcommand(
         [&, this](const dpp::slashcommand_t &event)
         {
+            if (event.command.get_command_name() == "btc")
+            {
+                std::string  message = getBitcoinPrice();
+                dpp::message msg(channelDev, message);
+                event.reply(msg);
+            }
+
             if (event.command.get_command_name() == "fortune")
             {
-                std::string message = getLinuxFortuneCpp();
+                std::string  message = getLinuxFortuneCpp();
                 dpp::message msg(channelDev, "Quote\n\t" + message);
                 event.reply(msg);
             }
@@ -395,14 +402,26 @@ bool MyDiscordBot::loadVariousBotCommands()
                 event.reply(msg);
                 bot->message_create(msg);
             }
+
+            if (event.command.get_command_name() == "bot")
+            {
+                dpp::message msgNeofetch(
+                    channelDev, this->getLinuxNeofetchCpp().substr(0, 1998) + "\n"
+                 );
+                event.reply(msgNeofetch);
+            }
         }
     );
 
     bot->on_ready(
         [&](const dpp::ready_t &event)
         {
+            /* bitcoin */
+            bot->global_command_create(dpp::slashcommand("btc", "Get Bitcoin Price!", bot->me.id));
+
             /* fortune */
-            bot->global_command_create(dpp::slashcommand("fortune", "Get random Quote!", bot->me.id));
+            bot->global_command_create(dpp::slashcommand("fortune", "Get random Quote!", bot->me.id)
+            );
 
             /* emoji */
             bot->global_command_create(dpp::slashcommand("emoji", "Get random Emoji!", bot->me.id));
@@ -415,6 +434,9 @@ bool MyDiscordBot::loadVariousBotCommands()
 
             /* gang */
             bot->global_command_create(dpp::slashcommand("gang", "Will shoot!", bot->me.id));
+
+            /* bot */
+            bot->global_command_create(dpp::slashcommand("bot", "About DSDotBot Bot!", bot->me.id));
         }
     );
 
