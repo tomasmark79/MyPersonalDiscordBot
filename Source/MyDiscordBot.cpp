@@ -367,6 +367,13 @@ bool MyDiscordBot::loadVariousBotCommands()
     bot->on_slashcommand(
         [&, this](const dpp::slashcommand_t &event)
         {
+            if (event.command.get_command_name() == "czk")
+            {
+                std::string  message = getCzechExchangeRate();
+                dpp::message msg(channelDev, message);
+                event.reply(msg);
+            }
+
             if (event.command.get_command_name() == "btc")
             {
                 std::string  message = getBitcoinPrice();
@@ -416,6 +423,9 @@ bool MyDiscordBot::loadVariousBotCommands()
     bot->on_ready(
         [&](const dpp::ready_t &event)
         {
+            /* czk */
+            bot->global_command_create(dpp::slashcommand("czk", "Get Czech Exchange!", bot->me.id));
+
             /* bitcoin */
             bot->global_command_create(dpp::slashcommand("btc", "Get Bitcoin Price!", bot->me.id));
 
