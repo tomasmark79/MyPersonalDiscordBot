@@ -1,11 +1,12 @@
 {
+    /* (c) Tomáš Mark 2024 */
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Default Standalone",
+            "name": "Debug Standalone Target",
             "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/Build/Standalone/default/Debug/DiscordBotStandalone",
+            "request": "launch", /*🪲*/
+            "program": "${workspaceFolder}/Build/Standalone/default/Debug/DiscordBotStandalone", 
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
@@ -23,16 +24,9 @@
             "preLaunchTask": "Direct Build"
         },
         {
-            "name": "Debug CMake configuration",
-            "type": "cmake",
-            "request": "launch",
-            "pipeName": "/tmp/cmake-debugger-pipe-3982572a-c383-4503-991f-c66ed23fa286",
-            "cmakeDebugType": "external"
-        },
-        {
             "name": "Debug RelWithDebInfo Standalone Target",
             "type": "cppdbg",
-            "request": "launch",
+            "request": "launch", /*🪲*/
             "program": "${workspaceFolder}/Build/Standalone/default/RelWithDebInfo/DiscordBotStandalone",
             "args": [],
             "stopAtEntry": false,
@@ -50,5 +44,6 @@
             ],
             "preLaunchTask": "Direct Build"
         }
+
     ]
 }

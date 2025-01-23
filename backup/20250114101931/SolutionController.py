@@ -6,28 +6,22 @@ import platform
 import glob
 import re
 import tarfile
-import uuid
-import json
-
 GREEN = "\033[0;32m"
 YELLOW = "\033[0;33m"
 RED = "\033[0;31m"
 NC = "\033[0m"
 LIGHTBLUE = "\033[1;34m"
 
-pythonVersion = sys.version.split()[0]
 workSpaceDir = os.path.dirname(os.path.abspath(__file__))
-nameOfScript = os.path.basename(__file__) + f" is using Python runtime version: {pythonVersion}\n"
+nameOfScript = os.path.basename(__file__) + " (python version)"
 scriptAuthor = "(c) Tomáš Mark 2004"
-scriptVersion = "0.0.2"
+scriptVersion = "0.0.1"
 
 taskName = sys.argv[1] if len(sys.argv) > 1 else None
 buildArch = sys.argv[2] if len(sys.argv) > 2 else None
 buildType = sys.argv[3] if len(sys.argv) > 3 else "Not Defined"
 isCrossCompilation = False
 
-# generate uuid for cmake debugger pipe
-unique_id = str(uuid.uuid4())
 
 buildFolderName = "Build"
 installOutputDir = os.path.join(workSpaceDir, buildFolderName, "Install")
@@ -51,7 +45,7 @@ if not taskName:
     exit_with_error("Task name is missing. Exiting.")
 
 # Print out the welcom and configuration
-print(f"{YELLOW}{nameOfScript}{scriptAuthor} v {scriptVersion} {NC}")
+print(f"{YELLOW}{nameOfScript} {scriptAuthor} v {scriptVersion} {NC}")
 print(f"{LIGHTBLUE}taskName\t: {taskName}{NC}")
 print(f"{GREEN}Build Arch\t: {buildArch}")
 print(f"Build Type\t: {buildType}")
@@ -119,7 +113,7 @@ def conan_install(bdir):
     execute_command(exeCmd)
 
 ### CMake configuration, revision 2
-def cmake_configure(src, bdir, isCMakeDebugger=False):
+def cmake_configure(src, bdir):
     
     conan_toolchain_file_path = os.path.join(workSpaceDir, bdir, "conan_toolchain.cmake")
     
@@ -133,35 +127,11 @@ def cmake_configure(src, bdir, isCMakeDebugger=False):
         if platform.system().lower() in ["linux", "darwin"]: 
             # CMake configuration for Linux and MacOS with Conan toolchain
             conan_build_sh_file = os.path.join(workSpaceDir, bdir, "conanbuild.sh")
-
-            
-            if (not isCMakeDebugger):
-                bashCmd = f'source "{conan_build_sh_file}" && cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {DCMAKE_TOOLCHAIN_FILE_CMD} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir, buildArch, buildType)}"'
-            else:
-                
-                print (f"uuid: {unique_id}")
-                
-                launch_json_path = os.path.join(workSpaceDir, ".vscode", "launch.json")
-                
-                try:
-                    with open(launch_json_path, 'r') as file:
-                        launch_data = json.load(file)
-                    
-                    for config in launch_data.get("configurations", []):
-                        if "pipeName" in config:
-                            config["pipeName"] = f"/tmp/cmake-debugger-pipe-{unique_id}"
-                    
-                    with open(launch_json_path, 'w') as file:
-                        json.dump(launch_data, file, indent=4)
-                except json.JSONDecodeError as e:
-                    print(f"Error decoding JSON: {e}")
-                    exit(1) 
-
-
-                bashCmd = f'source "{conan_build_sh_file}" && cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {DCMAKE_TOOLCHAIN_FILE_CMD} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir, buildArch, buildType)}" --debugger --debugger-pipe /tmp/cmake-debugger-pipe-{unique_id}'
+            bashCmd = f'source "{conan_build_sh_file}" && cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {DCMAKE_TOOLCHAIN_FILE_CMD} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir, buildArch, buildType)}"'
             execute_subprocess(bashCmd, "/bin/bash")
         
         if platform.system().lower() == "windows":
+
             # CMake configuration for Windows x64 with Conan toolchain    
             conan_build_bat_file = os.path.join(workSpaceDir, bdir, "conanbuild.bat")
             winCmd = f'call "{conan_build_bat_file}" && cmake -S "{src}" -B "{os.path.join(workSpaceDir, bdir)}" {DCMAKE_TOOLCHAIN_FILE_CMD} -DCMAKE_BUILD_TYPE={buildType} -DCMAKE_INSTALL_PREFIX="{os.path.join(installOutputDir, buildArch, buildType)}"'
@@ -217,16 +187,10 @@ def build_spltr(lib, st):
 
 def configure_spltr(lib, st):
     if lib:
-        cmake_configure(".", get_build_dir("Library"), False)
+        cmake_configure(".", get_build_dir("Library"))
     if st:
-        cmake_configure("./Standalone", get_build_dir("Standalone"), False)
+        cmake_configure("./Standalone", get_build_dir("Standalone"))
         
-def configure_spltr_cmake_debugger(lib, st):
-    if lib:
-        cmake_configure(".", get_build_dir("Library"), True)
-    if st:
-        cmake_configure("./Standalone", get_build_dir("Standalone"), True)
-
 def cmake_install(bdir):
     cmake_build(bdir, target="install")        
 
@@ -319,7 +283,8 @@ def format_clang():
         for file in files:
             if file.endswith((".c", ".cpp", ".h", ".hpp")):
                 full_path = os.path.join(root, file)
-                cmd = f'clang-format -i "{full_path}"'
+                #cmd = f'clang-format -i "{full_path}"'
+                cmd = f'clang-format-19 -i "{full_path}"'
                 print(f"Processing: {full_path}")
                 execute_command(cmd)
                 print(f"Done: {full_path}")
@@ -373,9 +338,6 @@ task_map = {
     "Configure 🔧": lambda: (configure_spltr(True, True), exit_ok("")),
     "📚 Configure 🔧": lambda: (configure_spltr(True, False), exit_ok("")),
     "🎯 Configure 🔧": lambda: (configure_spltr(False, True), exit_ok("")),
-    "Configure with CMake Debugger 🪲": lambda: (configure_spltr_cmake_debugger(True, True), exit_ok("")),
-    "📚 Configure with CMake Debugger 🪲": lambda: (configure_spltr_cmake_debugger(True, False), exit_ok("")),
-    "🎯 Configure with CMake Debugger 🪲": lambda: (configure_spltr_cmake_debugger(False, True), exit_ok("")),
     "Build 🔨": lambda: (build_spltr(True, True), exit_ok("")),
     "📚 Build 🔨": lambda: (build_spltr(True, False), exit_ok("")),
     "🎯 Build 🔨": lambda: (build_spltr(False, True), exit_ok("")),
