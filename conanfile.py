@@ -10,6 +10,7 @@ class MarkWareVCMake(ConanFile):
         self.requires("fmt/11.1.1") # required by cpm package
         self.requires("nlohmann_json/3.11.2") # is modern to have json support
     # it is on you to define rest of the dependencies
+        self.requires("libcurl/8.11.1")
         self.requires("dpp/10.0.35")
 
     # -------------------------------------- --

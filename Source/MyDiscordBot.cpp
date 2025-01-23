@@ -501,13 +501,15 @@ bool MyDiscordBot::loadVariousBotCommands()
 
             /* noemojies */
             bot->global_command_create(dpp::slashcommand(
-                "noemojies", "Stop to getting random Emoji in regularly interval 10 seconds!", bot->me.id
+                "noemojies",
+                "Stop to getting random Emoji in regularly interval 10 seconds!",
+                bot->me.id
             ));
 
             /* emojies */
-            bot->global_command_create(
-                dpp::slashcommand("emojies", "Get random Emoji in regularly interval 10 seconds!", bot->me.id)
-            );
+            bot->global_command_create(dpp::slashcommand(
+                "emojies", "Get random Emoji in regularly interval 10 seconds!", bot->me.id
+            ));
 
             /* emoji */
             bot->global_command_create(dpp::slashcommand("emoji", "Get random Emoji!", bot->me.id));
