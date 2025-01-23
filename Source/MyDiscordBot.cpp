@@ -365,8 +365,20 @@ std::string MyDiscordBot::getCzechExchangeRate()
 bool MyDiscordBot::loadVariousBotCommands()
 {
     bot->on_slashcommand(
-        [&](const dpp::slashcommand_t &event)
+        [&, this](const dpp::slashcommand_t &event)
         {
+            if (event.command.get_command_name() == "fortune")
+            {
+                std::string message = getLinuxFortuneCpp();
+                dpp::message msg(channelDev, "Quote\n\t" + message);
+                event.reply(msg);
+            }
+
+            if (event.command.get_command_name() == "emoji")
+            {
+                event.reply(emojiTools.getRandomEmoji(emoji));
+            }
+
             if (event.command.get_command_name() == "ping")
             {
                 event.reply("Pong! 🏓");
@@ -389,6 +401,12 @@ bool MyDiscordBot::loadVariousBotCommands()
     bot->on_ready(
         [&](const dpp::ready_t &event)
         {
+            /* fortune */
+            bot->global_command_create(dpp::slashcommand("fortune", "Get random Quote!", bot->me.id));
+
+            /* emoji */
+            bot->global_command_create(dpp::slashcommand("emoji", "Get random Emoji!", bot->me.id));
+
             /* ping */
             bot->global_command_create(dpp::slashcommand("ping", "Ping pong!", bot->me.id));
 
