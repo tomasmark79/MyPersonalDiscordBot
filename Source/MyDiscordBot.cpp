@@ -31,7 +31,6 @@
     "kurzy-devizoveho-trhu/denni_kurz.txt"
 
 std::unique_ptr<dpp::cluster> bot;
-// std::unique_ptr<MyGitHubApi>  gitHub;
 
 EmojiTools  emojiTools;
 std::string emoji;
@@ -61,8 +60,9 @@ std::atomic<bool> stopGithubEventPooling(false);
 MyDiscordBot::MyDiscordBot()
 {
     std::cout << "--- MyDiscordBot v." << MYDISCORDBOT_VERSION << " instantiated ---" << std::endl;
-    std::cout << "--- " << curl_version() << " linked ---" << std::endl;
-    // gitHub = std::make_unique<MyGitHubApi>();
+    curl_version_info_data *curlinfo = curl_version_info(CURLVERSION_NOW);
+    std::cout << "--- " << curlinfo->version << " linked ---" << std::endl;
+    
     initCluster();
 }
 
