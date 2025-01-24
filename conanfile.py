@@ -6,7 +6,7 @@ class MarkWareVCMake(ConanFile):
     generators = "CMakeToolchain", "CMakeDeps"
 
     def requirements(self):
-        self.requires("zlib/1.2.11") # used to compress and decompress data
+        self.requires("zlib/1.3.1") # used to compress and decompress data
         self.requires("fmt/11.1.1") # required by cpm package
         self.requires("nlohmann_json/3.11.2") # is modern to have json support
     # it is on you to define rest of the dependencies
