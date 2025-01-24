@@ -113,9 +113,9 @@ def get_build_dir(kind):
 def conan_install(bdir):
     with open("CMakeLists.txt") as f:
         cmake_content = f.read()
-    shared_flag = "-o *:shared=True" if 'option(BUILD_SHARED_LIBS "Build using shared libraries" ON)' in cmake_content else "-o *:shared=False"
     profile = "default" if not isCrossCompilation else buildArch
-    exeCmd = f'conan install "{workSpaceDir}" --output-folder="{os.path.join(workSpaceDir, bdir)}" --build=missing --profile {profile} --settings build_type={buildType} {shared_flag}'
+    exeCmd = f'conan install "{workSpaceDir}" --output-folder="{os.path.join(workSpaceDir, bdir)}" --deployer=full_deploy --build=missing --profile {profile} --settings build_type={buildType}'
+    
     execute_command(exeCmd)
 
 ### CMake configuration, revision 2
