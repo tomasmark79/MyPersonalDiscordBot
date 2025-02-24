@@ -8,7 +8,7 @@
             "program": "${workspaceFolder}/build/standalone/default/debug/DiscordBotStandalone",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/build/standalone/default/debug/",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
