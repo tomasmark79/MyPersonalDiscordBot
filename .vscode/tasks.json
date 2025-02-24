@@ -71,7 +71,7 @@
         {
             "label": "Launch Standalone",
             "type": "shell",
-            "command": "${workspaceFolder}/build/standalone/default/debug/VCMStandalone",
+            "command": "${workspaceFolder}/build/standalone/default/debug/DiscordBotStandalone",
             "group": {
                 "kind": "build",
                 "isDefault": true
