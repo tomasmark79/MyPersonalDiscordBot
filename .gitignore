@@ -1,5 +1,5 @@
 /Build*
+/build*
 /backup*
 CMakeUserPresets.json
-SolutionController.log
-
+Solution.log

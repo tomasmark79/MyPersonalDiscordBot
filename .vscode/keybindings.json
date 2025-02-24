@@ -4,6 +4,11 @@
     /* File -> Preferences -> Keyboard Shortcuts -> Open Keyboard Shortcuts */
     /* or via filesystem in `~/.config/Code/${user}/keybindings.json`       */
     {
+        "key": "ctrl+alt+r",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Launch Standalone"
+    },
+    {
         "key": "f7",
         "command": "workbench.action.tasks.runTask",
         "args": "Direct Build"
@@ -12,11 +17,6 @@
         "key": "shift+f7",
         "command": "workbench.action.tasks.runTask",
         "args": "MarkWare Tasks"
-    },
-    {
-        "key": "ctrl+alt+s",
-        "command": "workbench.action.tasks.runTask",
-        "args": "MarkWare Special Tasks"
     },
     {
         "key": "ctrl+alt+c",
@@ -36,11 +36,6 @@
     {
         "key": "ctrl+alt+l",
         "command": "workbench.action.tasks.runTask",
-        "args": "lint"
-    },
-    {
-        "key": "ctrl+alt+shift+b",
-        "command": "workbench.action.tasks.runTask",
-        "args": "shellcheck project bash scripts"
+        "args": "clang-tidy"
     }
 ]

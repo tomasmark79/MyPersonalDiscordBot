@@ -1,62 +1,44 @@
 {
-    /* (c) Tomáš Mark 2024 */
+    /* (c) Tomáš Mark 2024-2025 */
     "version": "2.0.0",
     "inputs": [
-        {
-            /* SPECIAL MENU ITEMS */
-            "id": "specialTaskName",
-            "type": "pickString",
-            "description": "Select MarkWare Special Task",
-            "options": [
-                "Permutate scenarios ☕"
-            ],
-            "default": "Permutate scenarios ☕"
-        },
         {
             /* MENU ITEMS */
             "id": "taskName",
             "type": "pickString",
             "description": "Select MarkWare Task",
             "options": [
-                "🚀 Zero to Build [s]",
-                "🦸 Zero to Hero [s]",
-                "🧹 Clean folder [s]",
-                "🗡️ Conan install [s]",
-                "🔧 CMake configure [s]",
-                "🪲 CMake configure with debugger [s]",
-                "🔨 Build [s]",
-                "📜 Collect Licenses [s]",
-                "📌 Install Artefacts [s]",
-                "📦 Release Tarballs [s]",
+                "🚀 Zero to Build",
+                "🦸 Zero to Hero",
+                "🧹 Clean folder",
+                "🗡️ Conan install",
+                "🔧 CMake configure",
+                "🪲 CMake configure with debugger",
+                "🔨 Build",
+                "📜 Collect Licenses",
+                "📌 Install Artefacts",
+                "📦 Release Tarballs",
+                "🛸 Run CPack",
                 "",
-                "🚀 Zero to Build [l]",
-                "🦸 Zero to Hero [l]",
-                "🧹 Clean folder [l]",
-                "🗡️ Conan install [l]",
-                "🔧 CMake configure [l]",
-                "🪲 CMake configure with debugger [l]",
-                "🔨 Build [l]",
-                "📜 Collect Licenses [l]",
-                "📌 Install Artefacts [l]",
-                "📦 Release Tarballs [l]",
-                "",
-                "🚀 Zero to Build [sl]",
-                "🦸 Zero to Hero [sl]",
-                "🧹 Clean folder [sl]",
-                "🗡️ Conan install [sl]",
-                "🔧 CMake configure [sl]",
-                "🪲 CMake configure with debugger [sl]",
-                "🔨 Build [sl]",
-                "📜 Collect Licenses [sl]",
-                "📌 Install Artefacts [sl]",
-                "📦 Release Tarballs [sl]",
+                "🔍 clang-tidy",
+                "📐 clang-format",
+                "📏 cmake-format",
                 "",
                 "⚔️ conan graph.html",
-                "🔍 lint",
-                "📐 clang-format",
-                "📏 cmake-format"
             ],
-            "default": "🔨 Build [s]"
+            "default": "🔨 Build"
+        },
+        {
+            /* PRODUCT ITEMS */
+            "id": "buildProduct",
+            "type": "pickString",
+            "description": "Select target product",
+            "options": [
+                "standalone",
+                "library",
+                "both"
+            ],
+            "default": "standalone"
         },
         {
             /* ARCH ITEMS */
@@ -64,8 +46,8 @@
             "type": "pickString",
             "description": "Select target architecture",
             "options": [
-                "default", /* this is system default compiler */
-                "x86_64-unknown-linux-gnu",
+                "default",
+                "x86_64-clang-linux-gnu",
                 "x86_64-w64-mingw32",
                 "aarch64-rpi4-linux-gnu"
             ],
@@ -87,20 +69,14 @@
     ],
     "tasks": [
         {
-            /* SPECIAL TASKS RUN */
-            "label": "MarkWare Special Tasks",
+            "label": "Launch Standalone",
             "type": "shell",
-            "command": "python3",
-            "args": [
-                "${workspaceFolder}/SolutionController.py",
-                "${input:specialTaskName}",
-                "independent_parameter"
-            ],
+            "command": "${workspaceFolder}/build/standalone/default/debug/VCMStandalone",
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "detail": "MarkWare Special Tasks",
+            "detail": "Launch Standalone",
             "problemMatcher": [],
             "dependsOn": [
                 /* "clear terminal" */ /* uncomment if you want to clear terminal before each task */
@@ -113,6 +89,7 @@
             "command": "python3",
             "args": [
                 "${workspaceFolder}/SolutionController.py",
+                "${input:buildProduct}",
                 "${input:taskName}",
                 "${input:buildArch}",
                 "${input:buildType}"
@@ -134,7 +111,8 @@
             "command": "python3",
             "args": [
                 "${workspaceFolder}/SolutionController.py",
-                "🔨 Build [s]",
+                "standalone",
+                "🔨 Build",
                 "default",
                 "Debug"
             ],
@@ -146,13 +124,14 @@
             "problemMatcher": []
         },
         {
-            /* DIRECT LINT C/C++ ( SHORT MENU )  */
-            "label": "lintC",
+            /* DIRECT CLANG-TIDY C/C++ ( NEED MENU )  */
+            "label": "clang-tidy",
             "type": "shell",
             "command": "python3",
             "args": [
                 "${workspaceFolder}/SolutionController.py",
-                "🔍 lint",
+                "${input:buildProduct}",
+                "🔍 clang-tidy",
                 "${input:buildArch}",
                 "${input:buildType}"
             ],
@@ -160,19 +139,19 @@
                 "kind": "build",
                 "isDefault": false
             },
-            "detail": "lintC",
+            "detail": "clang-tidy",
             "problemMatcher": []
         },
         {
-            /* DIRECT CLANG-FORMAT ( SHORT MENU ) */
+            /* DIRECT CLANG-FORMAT */
             "label": "clang-format",
             "type": "shell",
             "command": "python3",
             "args": [
                 "${workspaceFolder}/SolutionController.py",
+                "both",
                 "📐 clang-format",
-                "${input:buildArch}",
-                "${input:buildType}"
+                "noNeedArch"
             ],
             "group": {
                 "kind": "build",
@@ -182,15 +161,15 @@
             "problemMatcher": []
         },
         {
-            /* DIRECT CMAKE-FORMAT ( SHORT MENU ) */
+            /* DIRECT CMAKE-FORMAT */
             "label": "cmake-format",
             "type": "shell",
             "command": "python3",
             "args": [
                 "${workspaceFolder}/SolutionController.py",
+                "both",
                 "📏 cmake-format",
-                "${input:buildArch}",
-                "${input:buildType}"
+                 "noNeedArch"
             ],
             "group": {
                 "kind": "build",
@@ -199,7 +178,7 @@
             "detail": "cmake-format",
             "problemMatcher": []
         },
-        { /* clear terminal */
+        { /* CLEAR TERMINAL */
             "label": "clear terminal",
             "type": "shell",
             "command": "clear",

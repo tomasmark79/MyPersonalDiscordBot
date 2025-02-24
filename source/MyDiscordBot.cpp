@@ -1,5 +1,6 @@
+#include <MyDiscordBot/version.h>
 #include "MyDiscordBot/MyDiscordBot.hpp"
-#include <mydiscordbot/version.h>
+#include <Logger.hpp>
 
 #include <EmojiTools/EmojiTools.hpp>
 #include <curl/curl.h>

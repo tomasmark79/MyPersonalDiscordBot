@@ -16,18 +16,6 @@ class MarkWareVCMake(ConanFile):
         self.requires("openssl/3.3.2")
         self.requires("dpp/10.0.35")
 
-    # -------------------------------------- --
-    # MarkWareVCMake is using self mechanism --
-    # to define build ouput layout!          --
-    # ├── Build
-    #     ├── Artefacts - tarballs
-    #     ├── Install - final installation
-    #     ├── Library - library build
-    #     └── Standalone - standalone build
-    # ├── cmake
-    # ├── include
-    # ├── Source
-    # └── Standalone
     # ------------------------keep-commented --
     # def layout(self):                      --
         # cmake_layout(self)                 --
