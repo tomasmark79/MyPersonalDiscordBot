@@ -190,3 +190,5 @@ packageProject(
 # Add missing installation exports
 # ==============================================================================
 install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include/${LIBRARY_NAME} DESTINATION include/)
+# assets
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/assets DESTINATION .)

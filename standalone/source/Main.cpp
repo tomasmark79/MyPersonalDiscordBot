@@ -7,9 +7,8 @@
 #include <memory>
 #include <thread>
 
-int main()
-{
-    std::unique_ptr<MyDiscordBot> lib = std::make_unique<MyDiscordBot>(); // cpp14 +
-    
-    return 0;
+int main() {
+  std::unique_ptr<MyDiscordBot> lib =
+      std::make_unique<MyDiscordBot>();  // cpp14 +
+  return 0;
 }

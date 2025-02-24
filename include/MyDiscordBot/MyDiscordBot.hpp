@@ -7,30 +7,31 @@
 #include <random>
 #include <string>
 
-class MyDiscordBot
-{
-  public:
-    bool loadVariousBotCommands();
-    bool startPollingEmojies();
-    bool startPollingFortune();
-    bool startPollingBTCPrice();
-    bool startPollingCZExchRate();
+class MyDiscordBot {
+public:
+  bool loadVariousBotCommands();
+  bool startPollingEmojies();
+  bool startPollingFortune();
+  bool startPollingBTCPrice();
+  bool startPollingCZExchRate();
+  bool startPollingGetBibleVerse();
 
-    bool welcomeWithNeofetch();
-    bool initCluster();
-    bool getToken(std::string &token, const std::string &filePath);
+  bool welcomeWithNeofetch();
+  bool initCluster();
+  bool getToken(std::string &token, const std::string &filePath);
 
-    std::string getLinuxFortuneCpp();
-    std::string getLinuxNeofetchCpp();
-    std::string getBitcoinPrice();
-    std::string getCzechExchangeRate();
-    std::string getCurrentTime();
-    int         getRandom(int min, int max);
+  std::string getLinuxFortuneCpp();
+  std::string getLinuxNeofetchCpp();
+  std::string getBitcoinPrice();
+  std::string getCzechBibleVerse();
+  std::string getCzechExchangeRate();
+  std::string getCurrentTime();
+  int getRandom(int min, int max);
 
-    MyDiscordBot();
-    ~MyDiscordBot();
+  MyDiscordBot();
+  ~MyDiscordBot();
 
-    // TODO - ziskavat zajimave predpovedi, napr. pocasi
+  // TODO - ziskavat zajimave predpovedi, napr. pocasi
 };
 
-#endif // __MYDISCORDBOT_H__
+#endif  // __MYDISCORDBOT_H__
